@@ -1,0 +1,6 @@
+applications:
+  - prometheus
+parameters:
+  prometheus:
+    server:
+      enabled: true
