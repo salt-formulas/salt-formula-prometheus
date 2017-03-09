@@ -1,6 +1,6 @@
 applications:
-  - prometheus
+  - pushgateway
 parameters:
   prometheus:
-    server:
+    pushgateway:
       enabled: true

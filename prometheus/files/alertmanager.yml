@@ -1,0 +1,20 @@
+{% from "prometheus/map.jinja" import alertmanager with context %}
+global:
+{%- if alertmanager.config.global is defined %}
+{{ alertmanager.config.global | yaml(False) | indent(2, true) }}
+{%- endif %}
+
+route:
+{%- if alertmanager.config.route is defined %}
+{{ alertmanager.config.route | yaml(False) | indent(2, true) }}
+{%- endif %}
+
+inhibit_rules:
+{%- if alertmanager.config.inhibit_rules is defined %}
+{{ alertmanager.config.inhibit_rules | yaml(False) | indent(2, true) }}
+{%- endif %}
+
+receivers:
+{%- if alertmanager.config.receivers is defined %}
+{{ alertmanager.config.receivers | yaml(False) | indent(2, true) }}
+{%- endif %}

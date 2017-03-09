@@ -5,6 +5,110 @@ Salt Prometheus formula
 Power your metrics and alerting with a leading open-source monitoring
 solution.
 
+Sample pillars
+==============
+
+Configure prometheus server
+---------------------------
+
+.. code-block:: yaml
+
+  prometheus:
+    server:
+      enabled: true
+      dir:
+        config: /srv/volumes/prometheus-config
+        config_in_container: /opt/prometheus/config
+      bind:
+        port: 9090
+        address: 0.0.0.0
+      external_port: 15010
+      target:
+        kubernetes:
+          api_ip: 127.0.0.1
+          ssl_dir: /opt/prometheus/config
+          cert_name: kubelet-client.crt
+          key_name: kubelet-client.key
+        etcd: ${etcd:server:members}
+      alert:
+        PrometheusTargetDown:
+          if: 'up != 1'
+          labels:
+            severity: down
+          annotations:
+            summary: 'Prometheus target down'
+      storage:
+        local:
+          engine: "persisted"
+          retention: "360h"
+          memory_chunks: 1048576
+          max_chunks_to_persist: 524288
+          num_fingerprint_mutexes: 4096
+      alertmanager:
+        notification_queue_capacity: 10000
+      config:
+        global:
+          scrape_interval: "15s"
+          scrape_timeout: "15s"
+          evaluation_interval: "1m"
+          external_labels:
+            region: 'region1'
+
+Configure alertmanager
+----------------------
+
+.. code-block:: yaml
+
+  prometheus:
+    alertmanager:
+      enabled: true
+      dir:
+        config: /srv/volumes/prometheus-config
+      bind:
+        address: 0.0.0.0
+        port: 9093
+      external_port: 15011
+      config:
+        global:
+          resolve_timeout: 5m
+        route:
+          group_by: ['alertname', 'region', 'service']
+          group_wait: 60s
+          group_interval: 5m
+          repeat_interval: 3h
+          receiver: HTTP-notification
+        inhibit_rules:
+          - source_match:
+              severity: 'down'
+            target_match:
+              severity: 'critical'
+            equal: ['region', 'service']
+          - source_match:
+              severity: 'down'
+            target_match:
+              severity: 'warning'
+            equal: ['region', 'service']
+          - source_match:
+              severity: 'critical'
+            target_match:
+              severity: 'warning'
+            equal: ['alertname', 'region', 'service']
+        receivers:
+          - name: 'HTTP-notification'
+            webhook_configs:
+              - url: http://127.0.0.1
+                send_resolved: true
+
+Configure pushgateway
+---------------------
+
+.. code-block:: yaml
+
+  prometheus:
+    pushgateway:
+      enabled: true
+      external_port: 15012
+
 Documentation and Bugs
 ======================
 

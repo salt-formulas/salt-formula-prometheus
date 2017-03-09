@@ -1,0 +1,23 @@
+{%- from "prometheus/map.jinja" import server with context %}
+
+{%- if server.alert is defined %}
+{%- for alertname, alert in server.alert.iteritems() %}
+ALERT {{ alertname }}
+  IF {{ alert.if }}
+  {%- if alert.for is defined %}FOR {{ alert.for }}{%- endif %}
+  {%- if alert.labels is defined %}
+  LABELS {
+    {%- for name, value in alert.labels.iteritems() %}
+    {{ name }} = "{{ value }}"{%- if not loop.last %},{%- endif %}
+    {%- endfor %}
+  }
+  {%- endif %}
+  {%- if alert.annotations is defined %}
+  ANNOTATIONS {
+    {%- for name, value in alert.annotations.iteritems() %}
+    {{ name }} = "{{ value }}"{%- if not loop.last %},{%- endif %}
+    {%- endfor %}
+  }
+  {%- endif %}
+{%- endfor %}
+{%- endif %}
