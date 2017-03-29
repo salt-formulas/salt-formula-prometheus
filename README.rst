@@ -17,7 +17,7 @@ Configure prometheus server
     server:
       enabled: true
       dir:
-        config: /srv/volumes/prometheus-config
+        config: /srv/volumes/prometheus
         config_in_container: /opt/prometheus/config
       bind:
         port: 9090
@@ -30,6 +30,10 @@ Configure prometheus server
           cert_name: kubelet-client.crt
           key_name: kubelet-client.key
         etcd: ${etcd:server:members}
+      recording:
+        - name: 'instance:fd_utilization'
+          query: >-
+            process_open_fds / process_max_fds
       alert:
         PrometheusTargetDown:
           if: 'up != 1'
@@ -63,7 +67,7 @@ Configure alertmanager
     alertmanager:
       enabled: true
       dir:
-        config: /srv/volumes/prometheus-config
+        config: /srv/volumes/prometheus
       bind:
         address: 0.0.0.0
         port: 9093

@@ -1,7 +1,7 @@
 {% set server = salt['grains.filter_by']({
     'default': {
         'dir': {
-            'config': '/srv/volumes/prometheus-config',
+            'config': '/srv/volumes/prometheus',
             'config_in_container': '/opt/prometheus/config'
         },
     },
@@ -10,7 +10,7 @@
 {% set alertmanager = salt['grains.filter_by']({
     'default': {
         'dir': {
-            'config': '/srv/volumes/prometheus-config',
+            'config': '/srv/volumes/prometheus',
         },
     },
 }, merge=salt['pillar.get']('prometheus:alertmanager')) %}

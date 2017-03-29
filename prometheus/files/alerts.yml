@@ -1,5 +1,11 @@
 {%- from "prometheus/map.jinja" import server with context %}
 
+{%- if server.recording is defined %}
+{%- for recording_rule in server.recording %}
+{{ recording_rule.name }} = {{ recording_rule.query }}
+{%- endfor %}
+{%- endif %}
+
 {%- if server.alert is defined %}
 {%- for alertname, alert in server.alert.iteritems() %}
 ALERT {{ alertname }}

@@ -12,8 +12,9 @@ scrape_configs:
 {%- set telegraf_nodes = [] %}
 {%- for node_name, node_grains in salt['mine.get']('*', 'grains.items').iteritems() %}
   {%- if 'telegraf' in node_grains.get('services') %}
-    {%- set node_ip = node_grains.get('prometheus_client').get('address') %}
-    {%- set node_port = node_grains.get('prometheus_client').get('port') %}
+    {%- set prometheus_client = node_grains.get('telegraf').get('prometheus_client') %}
+    {%- set node_ip = prometheus_client.get('address') %}
+    {%- set node_port = prometheus_client.get('port') %}
     {%- set telegraf_address = "'%s:%d'" | format(node_ip, node_port) %}
     {%- do telegraf_nodes.append(telegraf_address) %}
   {%- endif %}
