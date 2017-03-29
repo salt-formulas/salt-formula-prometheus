@@ -24,12 +24,29 @@ Configure prometheus server
         address: 0.0.0.0
       external_port: 15010
       target:
+        dns:
+          - name: 'pushgateway'
+            domain:
+            - 'tasks.prometheus_pushgateway'
+            type: A
+            port: 9091
+          - name: 'prometheus'
+            domain:
+            - 'tasks.prometheus_server'
+            type: A
+            port: 9090
         kubernetes:
-          api_ip: 127.0.0.1
+          api_ip: ${_param:kubernetes_control_address}
           ssl_dir: /opt/prometheus/config
           cert_name: kubelet-client.crt
           key_name: kubelet-client.key
-        etcd: ${etcd:server:members}
+        etcd:
+          - host: ${_param:cluster_node01_address}
+            port: ${_param:cluster_node01_port}
+          - host: ${_param:cluster_node02_address}
+            port: ${_param:cluster_node02_port}
+          - host: ${_param:cluster_node03_address}
+            port: ${_param:cluster_node03_port}
       recording:
         - name: 'instance:fd_utilization'
           query: >-
