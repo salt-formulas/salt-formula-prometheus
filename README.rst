@@ -38,15 +38,20 @@ Configure prometheus server
         kubernetes:
           api_ip: ${_param:kubernetes_control_address}
           ssl_dir: /opt/prometheus/config
-          cert_name: kubelet-client.crt
-          key_name: kubelet-client.key
+          cert_name: prometheus-server.crt
+          key_name: prometheus-server.key
         etcd:
-          - host: ${_param:cluster_node01_address}
-            port: ${_param:cluster_node01_port}
-          - host: ${_param:cluster_node02_address}
-            port: ${_param:cluster_node02_port}
-          - host: ${_param:cluster_node03_address}
-            port: ${_param:cluster_node03_port}
+          scheme: https
+          ssl_dir: /opt/prometheus/config
+          cert_name: prometheus-server.crt
+          key_name: prometheus-server.key
+          member:
+            - host: ${_param:cluster_node01_address}
+              port: ${_param:cluster_node01_port}
+            - host: ${_param:cluster_node02_address}
+              port: ${_param:cluster_node02_port}
+            - host: ${_param:cluster_node03_address}
+              port: ${_param:cluster_node03_port}
       recording:
         - name: 'instance:fd_utilization'
           query: >-

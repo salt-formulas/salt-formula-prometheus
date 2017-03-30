@@ -27,12 +27,18 @@ scrape_configs:
 
 {% if server.get('target', {}).get('etcd') %}
   {%- set etcd_nodes = [] %}
-  {%- for node in server.target.etcd %}
+  {%- set etcd_target = server.target.etcd %}
+  {%- for node in etcd_target.member %}
     {%- set etcd_address = "'%s:%d'" | format(node.host, node.port) %}
     {%- do etcd_nodes.append(etcd_address) %}
   {%- endfor %}
   {%- if etcd_nodes|length > 0 %}
   - job_name: 'etcd'
+    {% if etcd_target.scheme %}scheme: {{ etcd_target.scheme }}{%- endif %}
+    tls_config:
+      insecure_skip_verify: true
+      {% if etcd_target.cert_name is defined %}cert_file: {{ etcd_target.ssl_dir }}/{{ etcd_target.cert_name }}{%- endif %}
+      {% if etcd_target.key_name is defined %}key_file: {{ etcd_target.ssl_dir }}/{{ etcd_target.key_name }}{%- endif %}
     static_configs:
     - targets: [{{ etcd_nodes | join(',') }}]
   {%- endif %}
