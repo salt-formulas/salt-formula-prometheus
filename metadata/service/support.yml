@@ -1,5 +1,7 @@
 parameters:
   prometheus:
     _support:
+      prometheus:
+        enabled: true
       grafana:
         enabled: true

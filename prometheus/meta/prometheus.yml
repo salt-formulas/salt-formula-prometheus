@@ -1,0 +1,12 @@
+{% raw %}
+server:
+  alert:
+    PrometheusUP:
+      if: 'up != 0'
+      labels:
+        severity: critical
+        service: prometheus
+      annotations:
+        summary: 'Prometheus endpoint {{ $labels.instance }} is down'
+        description: 'Prometheus endpoint {{ $labels.instance }} is down for job {{ $labels.job }}'
+{% endraw %}

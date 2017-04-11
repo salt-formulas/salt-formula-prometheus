@@ -1,13 +1,44 @@
 {%- from "prometheus/map.jinja" import server with context %}
 
-{%- if server.recording is defined %}
-{%- for recording_rule in server.recording %}
-{{ recording_rule.name }} = {{ recording_rule.query }}
-{%- endfor %}
-{%- endif %}
+{%- set alerts = {} %}
+{%- set recordings = {} %}
 
-{%- if server.alert is defined %}
-{%- for alertname, alert in server.alert.iteritems() %}
+
+{%- for recording_rule in server.get('recording', []) %}
+  {%- if recording_rule.name not in recordings %}
+    {%- do recordings.update({recording_rule.name: recording_rule.query}) %}
+  {%- endif %}
+{%- endfor %}
+
+{%- for node_name, node_grains in salt['mine.get']('*', 'grains.items').iteritems() %}
+  {%- set server_grain = node_grains.get('prometheus', {}).get('server', {}) %}
+  {%- for recording_rule in server_grain.get('recording', []) %}
+    {%- if recording_rule.name not in recordings %}
+      {%- do recordings.update({recording_rule.name: recording_rule.query}) %}
+    {%- endif %}
+  {%- endfor %}
+{%- endfor %}
+
+{%- for recording_name, query in recordings.iteritems() %}
+{{ recording_name }} = {{ query }}
+{%- endfor %}
+
+{%- for alertname, alert in server.get('alert', {}).iteritems() %}
+  {%- if alertname not in alerts %}
+    {%- do alerts.update({alertname: alert}) %}
+  {%- endif %}
+{%- endfor %}
+
+{%- for node_name, node_grains in salt['mine.get']('*', 'grains.items').iteritems() %}
+  {%- set server_grain = node_grains.get('prometheus', {}).get('server', {}) %}
+  {%- for alertname, alert in server_grain.get('alert', {}).iteritems() %}
+    {%- if alertname not in alerts %}
+      {%- do alerts.update({alertname: alert}) %}
+    {%- endif %}
+  {%- endfor %}
+{%- endfor %}
+
+{%- for alertname, alert in alerts.iteritems() %}
 ALERT {{ alertname }}
   IF {{ alert.if }}
   {%- if alert.for is defined %}FOR {{ alert.for }}{%- endif %}
@@ -26,4 +57,3 @@ ALERT {{ alertname }}
   }
   {%- endif %}
 {%- endfor %}
-{%- endif %}
