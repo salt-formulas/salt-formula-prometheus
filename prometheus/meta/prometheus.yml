@@ -2,7 +2,7 @@
 server:
   alert:
     PrometheusUP:
-      if: 'up != 0'
+      if: 'up != 1'
       labels:
         severity: critical
         service: prometheus
