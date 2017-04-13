@@ -8,56 +8,56 @@ global:
 rule_files:
 - {{ server.dir.config_in_container }}/alerts.yml
 
-scrape_configs:
-{%- set telegraf_nodes = [] %}
+{%- set static_target = {} %}
 {%- for node_name, node_grains in salt['mine.get']('*', 'grains.items').iteritems() %}
-  {%- if 'telegraf' in node_grains.get('services') %}
-    {%- set prometheus_client = node_grains.get('telegraf').get('prometheus_client') %}
-    {%- set node_ip = prometheus_client.get('address') %}
-    {%- set node_port = prometheus_client.get('port') %}
-    {%- set telegraf_address = "'%s:%d'" | format(node_ip, node_port) %}
-    {%- do telegraf_nodes.append(telegraf_address) %}
+  {%- set static_grain = node_grains.get('prometheus', {}).get('server', {}).get('target', {}).get('static', {}) %}
+  {%- for job_name, job in static_grain.iteritems() %}
+    {%- if static_target[job_name] is not defined %}
+      {%- do static_target.update({job_name: []}) %}
+    {%- endif %}
+    {%- for target in job.get('endpoint') %}
+      {%- do static_target[job_name].append(target) %}
+    {%- endfor %}
+  {%- endfor %}
+{%- endfor %}
+
+scrape_configs:
+{%- for job_name, targets in static_target.iteritems() %}
+  {%- set job = server.get('target', {}).get('static', {}).get(job_name, {}) %}
+  {%- set nodes = [] %}
+  {%- for target in targets %}
+    {%- set address = "'%s:%d'" | format(target.address, target.port) %}
+    {%- do nodes.append(address) %}
+  {%- endfor %}
+  {%- if nodes|length > 0 %}
+  - job_name: {{ job_name }}
+    {% if job.get('scheme') %}scheme: {{ job.scheme }}{%- endif %}
+    {%- if job.get('tls_config') %}
+    tls_config:
+      {% if job.tls_config.get('skip_verify') is defined %}insecure_skip_verify: {{ job.tls_config.skip_verify | lower }}{%- endif %}
+      {% if job.tls_config.get('cert_name') %}cert_file: {{ job.tls_config.ssl_dir }}/{{ job.tls_config.cert_name }}{%- endif %}
+      {% if job.tls_config.get('key_name') %}key_file: {{ job.tls_config.ssl_dir }}/{{ job.tls_config.key_name }}{%- endif %}
+    {%- endif %}
+    static_configs:
+    - targets: [{{ nodes | join(',') }}]
   {%- endif %}
 {%- endfor %}
-{%- if telegraf_nodes|length > 0 %}
-  - job_name: 'telegraf'
-    static_configs:
-    - targets: [{{ telegraf_nodes | join(',') }}]
-{%- endif %}
-
-{% if server.get('target', {}).get('etcd') %}
-  {%- set etcd_nodes = [] %}
-  {%- set etcd_target = server.target.etcd %}
-  {%- for node in etcd_target.member %}
-    {%- set etcd_address = "'%s:%d'" | format(node.host, node.port) %}
-    {%- do etcd_nodes.append(etcd_address) %}
-  {%- endfor %}
-  {%- if etcd_nodes|length > 0 %}
-  - job_name: 'etcd'
-    {% if etcd_target.scheme %}scheme: {{ etcd_target.scheme }}{%- endif %}
-    tls_config:
-      insecure_skip_verify: true
-      {% if etcd_target.cert_name is defined %}cert_file: {{ etcd_target.ssl_dir }}/{{ etcd_target.cert_name }}{%- endif %}
-      {% if etcd_target.key_name is defined %}key_file: {{ etcd_target.ssl_dir }}/{{ etcd_target.key_name }}{%- endif %}
-    static_configs:
-    - targets: [{{ etcd_nodes | join(',') }}]
-  {%- endif %}
-{%- endif %}
 
 {% if server.get('target', {}).get('kubernetes') %}
+  {%- set kubernetes_target = server.target.kubernetes %}
   - job_name: 'kubernetes-api'
     scheme: https
     tls_config:
       insecure_skip_verify: true
-      {% if server.target.kubernetes.cert_name is defined %}cert_file: {{ server.target.kubernetes.ssl_dir }}/{{ server.target.kubernetes.cert_name }}{%- endif %}
-      {% if server.target.kubernetes.key_name is defined %}key_file: {{ server.target.kubernetes.ssl_dir }}/{{ server.target.kubernetes.key_name }}{%- endif %}
+      {% if kubernetes_target.get('cert_name') %}cert_file: {{ kubernetes_target.ssl_dir }}/{{ kubernetes_target.cert_name }}{%- endif %}
+      {% if kubernetes_target.get('key_name') %}key_file: {{ kubernetes_target.ssl_dir }}/{{ kubernetes_target.key_name }}{%- endif %}
     kubernetes_sd_configs:
-    - api_server: {{ server.target.kubernetes.api_ip }}
+    - api_server: {{ kubernetes_target.api_ip }}
       role: endpoints
       tls_config:
         insecure_skip_verify: true
-        {% if server.target.kubernetes.cert_name is defined %}cert_file: {{ server.target.kubernetes.ssl_dir }}/{{ server.target.kubernetes.cert_name }}{%- endif %}
-        {% if server.target.kubernetes.key_name is defined %}key_file: {{ server.target.kubernetes.ssl_dir }}/{{ server.target.kubernetes.key_name }}{%- endif %}
+        {% if kubernetes_target.get('cert_name') %}cert_file: {{ kubernetes_target.ssl_dir }}/{{ kubernetes_target.cert_name }}{%- endif %}
+        {% if kubernetes_target.get('key_name') %}key_file: {{ kubernetes_target.ssl_dir }}/{{ kubernetes_target.key_name }}{%- endif %}
     relabel_configs:
     - source_labels: [__meta_kubernetes_namespace, __meta_kubernetes_service_name, __meta_kubernetes_endpoint_port_name]
       action: keep
@@ -68,15 +68,15 @@ scrape_configs:
     scheme: https
     tls_config:
       insecure_skip_verify: true
-      {% if server.target.kubernetes.cert_name is defined %}cert_file: {{ server.target.kubernetes.ssl_dir }}/{{ server.target.kubernetes.cert_name }}{%- endif %}
-      {% if server.target.kubernetes.key_name is defined %}key_file: {{ server.target.kubernetes.ssl_dir }}/{{ server.target.kubernetes.key_name }}{%- endif %}
+      {% if kubernetes_target.get('cert_name') %}cert_file: {{ kubernetes_target.ssl_dir }}/{{ kubernetes_target.cert_name }}{%- endif %}
+      {% if kubernetes_target.get('key_name') %}key_file: {{ kubernetes_target.ssl_dir }}/{{ kubernetes_target.key_name }}{%- endif %}
     kubernetes_sd_configs:
-    - api_server: {{ server.target.kubernetes.api_ip }}
+    - api_server: {{ kubernetes_target.api_ip }}
       role: node
       tls_config:
         insecure_skip_verify: true
-        {% if server.target.kubernetes.cert_name is defined %}cert_file: {{ server.target.kubernetes.ssl_dir }}/{{ server.target.kubernetes.cert_name }}{%- endif %}
-        {% if server.target.kubernetes.key_name is defined %}key_file: {{ server.target.kubernetes.ssl_dir }}/{{ server.target.kubernetes.key_name }}{%- endif %}
+        {% if kubernetes_target.get('cert_name') %}cert_file: {{ kubernetes_target.ssl_dir }}/{{ kubernetes_target.cert_name }}{%- endif %}
+        {% if kubernetes_target.get('key_name') %}key_file: {{ kubernetes_target.ssl_dir }}/{{ kubernetes_target.key_name }}{%- endif %}
     relabel_configs:
     - action: labelmap
       regex: __meta_kubernetes_node_label_(.+)
@@ -86,15 +86,15 @@ scrape_configs:
     scheme: https
     tls_config:
       insecure_skip_verify: true
-      {% if server.target.kubernetes.cert_name is defined %}cert_file: {{ server.target.kubernetes.ssl_dir }}/{{ server.target.kubernetes.cert_name }}{%- endif %}
-      {% if server.target.kubernetes.key_name is defined %}key_file: {{ server.target.kubernetes.ssl_dir }}/{{ server.target.kubernetes.key_name }}{%- endif %}
+      {% if kubernetes_target.get('cert_name') %}cert_file: {{ kubernetes_target.ssl_dir }}/{{ kubernetes_target.cert_name }}{%- endif %}
+      {% if kubernetes_target.get('key_name') %}key_file: {{ kubernetes_target.ssl_dir }}/{{ kubernetes_target.key_name }}{%- endif %}
     kubernetes_sd_configs:
-    - api_server: {{ server.target.kubernetes.api_ip }}
+    - api_server: {{ kubernetes_target.api_ip }}
       role: endpoints
       tls_config:
         insecure_skip_verify: true
-        {% if server.target.kubernetes.cert_name is defined %}cert_file: {{ server.target.kubernetes.ssl_dir }}/{{ server.target.kubernetes.cert_name }}{%- endif %}
-        {% if server.target.kubernetes.key_name is defined %}key_file: {{ server.target.kubernetes.ssl_dir }}/{{ server.target.kubernetes.key_name }}{%- endif %}
+        {% if kubernetes_target.get('cert_name') %}cert_file: {{ kubernetes_target.ssl_dir }}/{{ kubernetes_target.cert_name }}{%- endif %}
+        {% if kubernetes_target.get('key_name') %}key_file: {{ kubernetes_target.ssl_dir }}/{{ kubernetes_target.key_name }}{%- endif %}
     relabel_configs:
     - source_labels: [__meta_kubernetes_service_annotation_prometheus_io_scrape]
       action: keep
@@ -132,15 +132,15 @@ scrape_configs:
     scheme: https
     tls_config:
       insecure_skip_verify: true
-      {% if server.target.kubernetes.cert_name is defined %}cert_file: {{ server.target.kubernetes.ssl_dir }}/{{ server.target.kubernetes.cert_name }}{%- endif %}
-      {% if server.target.kubernetes.key_name is defined %}key_file: {{ server.target.kubernetes.ssl_dir }}/{{ server.target.kubernetes.key_name }}{%- endif %}
+      {% if kubernetes_target.get('cert_name') %}cert_file: {{ kubernetes_target.ssl_dir }}/{{ kubernetes_target.cert_name }}{%- endif %}
+      {% if kubernetes_target.get('key_name') %}key_file: {{ kubernetes_target.ssl_dir }}/{{ kubernetes_target.key_name }}{%- endif %}
     kubernetes_sd_configs:
-    - api_server: {{ server.target.kubernetes.api_ip }}
+    - api_server: {{ kubernetes_target.api_ip }}
       role: pod
       tls_config:
         insecure_skip_verify: true
-        {% if server.target.kubernetes.cert_name is defined %}cert_file: {{ server.target.kubernetes.ssl_dir }}/{{ server.target.kubernetes.cert_name }}{%- endif %}
-        {% if server.target.kubernetes.key_name is defined %}key_file: {{ server.target.kubernetes.ssl_dir }}/{{ server.target.kubernetes.key_name }}{%- endif %}
+        {% if kubernetes_target.get('cert_name') %}cert_file: {{ kubernetes_target.ssl_dir }}/{{ kubernetes_target.cert_name }}{%- endif %}
+        {% if kubernetes_target.get('key_name') %}key_file: {{ kubernetes_target.ssl_dir }}/{{ kubernetes_target.key_name }}{%- endif %}
     relabel_configs:
     - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
       action: keep
