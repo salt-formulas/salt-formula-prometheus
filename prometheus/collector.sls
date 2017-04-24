@@ -27,3 +27,15 @@ prometheus_grain:
     service_grains: {{ service_grains|yaml }}
   - require:
     - file: prometheus_grains_dir
+
+prometheus_grains_file:
+  cmd.wait:
+  - name: cat /etc/salt/grains.d/* > /etc/salt/grains
+  - watch:
+    - file: prometheus_grain
+
+prometheus_grains_publish:
+  module.run:
+  - name: mine.update
+  - watch:
+    - cmd: prometheus_grains_file
