@@ -1,0 +1,5 @@
+dashboard:
+  prometheus-performances-prometheus:
+    format: json
+    template: prometheus/files/grafana_dashboards/prometheus_performances_prometheus.json
+
