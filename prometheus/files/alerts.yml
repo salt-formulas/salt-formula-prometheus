@@ -3,57 +3,48 @@
 {%- set alerts = {} %}
 {%- set recordings = {} %}
 
-
-{%- for recording_rule in server.get('recording', []) %}
-  {%- if recording_rule.name not in recordings %}
-    {%- do recordings.update({recording_rule.name: recording_rule.query}) %}
-  {%- endif %}
-{%- endfor %}
-
 {%- for node_name, node_grains in salt['mine.get']('*', 'grains.items').iteritems() %}
   {%- set server_grain = node_grains.get('prometheus', {}).get('server', {}) %}
-  {%- for recording_rule in server_grain.get('recording', []) %}
-    {%- if recording_rule.name not in recordings %}
-      {%- do recordings.update({recording_rule.name: recording_rule.query}) %}
-    {%- endif %}
+  {%- for recordingname, recording in server_grain.get('recording', {}).iteritems() %}
+    {%- do recordings.update({recordingname: recording}) %}
   {%- endfor %}
 {%- endfor %}
 
-{%- for recording_name, query in recordings.iteritems() %}
-{{ recording_name }} = {{ query }}
-{%- endfor %}
+{%- set recordings = salt['grains.filter_by']({'default': recordings}, merge=server.get('recording', {})) %}
 
-{%- for alertname, alert in server.get('alert', {}).iteritems() %}
-  {%- if alertname not in alerts %}
-    {%- do alerts.update({alertname: alert}) %}
+{%- for recordingname, recording in recordings.iteritems() %}
+  {%- if recording.get('enabled', True) %}
+    {{ recordingname }} = {{ recording.query }}
   {%- endif %}
 {%- endfor %}
 
 {%- for node_name, node_grains in salt['mine.get']('*', 'grains.items').iteritems() %}
   {%- set server_grain = node_grains.get('prometheus', {}).get('server', {}) %}
   {%- for alertname, alert in server_grain.get('alert', {}).iteritems() %}
-    {%- if alertname not in alerts %}
       {%- do alerts.update({alertname: alert}) %}
-    {%- endif %}
   {%- endfor %}
 {%- endfor %}
 
+{%- set alerts = salt['grains.filter_by']({'default': alerts}, merge=server.get('alert', {})) %}
+
 {%- for alertname, alert in alerts.iteritems() %}
-ALERT {{ alertname }}
-  IF {{ alert.if }}
-  {%- if alert.for is defined %}FOR {{ alert.for }}{%- endif %}
-  {%- if alert.labels is defined %}
-  LABELS {
-    {%- for name, value in alert.labels.iteritems() %}
-    {{ name }} = "{{ value }}"{%- if not loop.last %},{%- endif %}
-    {%- endfor %}
-  }
-  {%- endif %}
-  {%- if alert.annotations is defined %}
-  ANNOTATIONS {
-    {%- for name, value in alert.annotations.iteritems() %}
-    {{ name }} = "{{ value }}"{%- if not loop.last %},{%- endif %}
-    {%- endfor %}
-  }
+  {%- if alert.get('enabled', True) %}
+    ALERT {{ alertname }}
+      IF {{ alert.if }}
+      {%- if alert.for is defined %}FOR {{ alert.for }}{%- endif %}
+      {%- if alert.labels is defined %}
+      LABELS {
+        {%- for name, value in alert.labels.iteritems() %}
+        {{ name }} = "{{ value }}"{%- if not loop.last %},{%- endif %}
+        {%- endfor %}
+      }
+      {%- endif %}
+      {%- if alert.annotations is defined %}
+      ANNOTATIONS {
+        {%- for name, value in alert.annotations.iteritems() %}
+        {{ name }} = "{{ value }}"{%- if not loop.last %},{%- endif %}
+        {%- endfor %}
+      }
+      {%- endif %}
   {%- endif %}
 {%- endfor %}

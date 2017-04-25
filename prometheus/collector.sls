@@ -1,4 +1,4 @@
-{%- set service_grains = {'prometheus': {'server': {'alert': {}, 'recording': [], 'target': {}}}} %}
+{%- set service_grains = {'prometheus': {'server': {'alert': {}, 'recording': {}, 'target': {}}}} %}
 {%- for service_name, service in pillar.items() %}
   {%- if service.get('_support', {}).get('prometheus', {}).get('enabled', False) %}
     {%- set grains_fragment_file = service_name+'/meta/prometheus.yml' %}

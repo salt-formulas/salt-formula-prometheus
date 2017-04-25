@@ -25,11 +25,11 @@ scrape_configs:
 {%- for job_name, targets in static_target.iteritems() %}
   {%- set job = server.get('target', {}).get('static', {}).get(job_name, {}) %}
   {%- set nodes = [] %}
-  {%- for target in targets %}
+  {%- for target in targets + job.get('endpoint', []) %}
     {%- set address = "'%s:%d'" | format(target.address, target.port) %}
     {%- do nodes.append(address) %}
   {%- endfor %}
-  {%- if nodes|length > 0 %}
+  {%- if nodes|length > 0 and job.get('enabled', True) %}
   - job_name: {{ job_name }}
     {% if job.get('scheme') %}scheme: {{ job.scheme }}{%- endif %}
     {%- if job.get('tls_config') %}
@@ -43,7 +43,7 @@ scrape_configs:
   {%- endif %}
 {%- endfor %}
 
-{% if server.get('target', {}).get('kubernetes') %}
+{%- if server.get('target', {}).get('kubernetes', {}).get('enabled', True) %}
   {%- set kubernetes_target = server.target.kubernetes %}
   - job_name: 'kubernetes-api'
     scheme: https
@@ -164,7 +164,8 @@ scrape_configs:
       target_label: kubernetes_pod_name
 {%- endif %}
 
-{%- for target in server.get('target', {}).get('dns', []) %}
+{%- if server.get('target', {}).get('dns', {}).get('enabled', True) %}
+  {%- for target in server.get('target', {}).get('dns', {}).get('endpoint', []) %}
   - job_name: {{ target.name }}
     dns_sd_configs:
     - names:
@@ -173,4 +174,5 @@ scrape_configs:
   {%- endfor %}
       type: {{ target.type }}
       port: {{ target.port }}
-{%- endfor %}
+  {%- endfor %}
+{%- endif %}
