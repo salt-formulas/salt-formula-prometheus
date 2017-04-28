@@ -1,3 +1,5 @@
+{%- from "prometheus/map.jinja" import server as prometheus_server with context %}
+
 {%- set service_grains = {'prometheus': {'server': {'alert': {}, 'recording': {}, 'target': {}}}} %}
 {%- for service_name, service in pillar.items() %}
   {%- if service.get('_support', {}).get('prometheus', {}).get('enabled', False) %}
