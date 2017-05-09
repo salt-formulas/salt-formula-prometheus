@@ -1,7 +1,7 @@
 {% from "prometheus/map.jinja" import server with context %}
 {%- if server.enabled %}
 
-{%- if pillar.docker.host is defined %}
+{%- if pillar.docker is defined and pillar.docker.host is defined %}
 
 {{server.dir.config}}/prometheus.yml:
   file.managed:

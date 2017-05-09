@@ -1,0 +1,21 @@
+grain:
+  {%- if pillar.prometheus is defined and pillar.prometheus.collector is defined %}
+    {%- from "prometheus/map.jinja" import server as prometheus_server with context %}
+  prometheus:
+    {%- set service_grains = {'prometheus': {'server': {'alert': {}, 'recording': {}, 'target': {}}}} %}
+    {%- for service_name, service in pillar.items() %}
+      {%- if service.get('_support', {}).get('prometheus', {}).get('enabled', False) %}
+        {%- set grains_fragment_file = service_name+'/meta/prometheus.yml' %}
+        {%- macro load_grains_file() %}{% include grains_fragment_file ignore missing %}{% endmacro %}
+        {%- set grains_yaml = load_grains_file()|load_yaml %}
+        {%- if grains_yaml is mapping %}
+          {%- set service_grains = salt['grains.filter_by']({'default': service_grains}, merge={'prometheus': grains_yaml}) %}
+        {%- endif %}
+      {%- endif %}
+    {%- endfor %}
+    {{ service_grains|yaml(False)|indent(4) }}
+  {%- endif %}
+
+{#-
+  vim: syntax=jinja
+-#}

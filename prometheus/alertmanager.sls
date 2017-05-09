@@ -1,7 +1,7 @@
 {% from "prometheus/map.jinja" import alertmanager with context %}
 {%- if alertmanager.enabled %}
 
-{%- if pillar.docker.host is defined %}
+{%- if pillar.docker is defined and pillar.docker.host is defined %}
 
 {{alertmanager.dir.config}}/alertmanager.yml:
   file.managed:
