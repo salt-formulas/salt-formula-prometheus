@@ -1,5 +1,5 @@
 grain:
-  {%- if pillar.prometheus is defined and pillar.prometheus.collector is defined %}
+  {%- if pillar.get('prometheus', {}).get('collector') %}
     {%- from "prometheus/map.jinja" import server as prometheus_server with context %}
   prometheus:
     {%- set service_grains = {'prometheus': {'server': {'alert': {}, 'recording': {}, 'target': {}}}} %}
