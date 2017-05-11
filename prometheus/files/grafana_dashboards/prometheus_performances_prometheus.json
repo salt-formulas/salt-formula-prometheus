@@ -1,3 +1,4 @@
+{% raw %}
 {
   "annotations": {
     "list": []
@@ -1708,3 +1709,4 @@
   "title": "Prometheus Performances",
   "version": 4
 }
+{% endraw %}
