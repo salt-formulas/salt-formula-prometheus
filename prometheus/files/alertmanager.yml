@@ -1,7 +1,9 @@
 {% from "prometheus/map.jinja" import alertmanager with context %}
 global:
 {%- if alertmanager.config.global is defined %}
-{{ alertmanager.config.global | yaml(False) | indent(2, true) }}
+  {%- if alertmanager.config.global.resolve_timeout is defined %}
+  resolve_timeout: {{ alertmanager.config.global.resolve_timeout }}
+  {%- endif %}
 {%- endif %}
 
 route:
@@ -10,11 +12,37 @@ route:
 {%- endif %}
 
 inhibit_rules:
-{%- if alertmanager.config.inhibit_rules is defined %}
-{{ alertmanager.config.inhibit_rules | yaml(False) | indent(2, true) }}
+{%- for name, rule in alertmanager.config.get('inhibit_rule', {}).iteritems() %}
+{%- if rule.get('enabled', True) %}
+  # {{ name }}
+  - source_match:
+  {%- for key, value in rule.source_match.iteritems() %}
+      {{ key }}: {{ value }}
+  {%- endfor %}
+    target_match:
+  {%- for key, value in rule.target_match.iteritems() %}
+      {{ key }}: {{ value }}
+  {%- endfor %}
+    equal:
+  {%- for key in rule.equal %}
+    - {{ key }}
+  {%- endfor %}
 {%- endif %}
+{%- endfor %}
 
 receivers:
-{%- if alertmanager.config.receivers is defined %}
-{{ alertmanager.config.receivers | yaml(False) | indent(2, true) }}
+{%- for name, config in alertmanager.config.get('receiver', {}).iteritems() %}
+{%- if config.get('enabled', True) %}
+  - name: '{{ name }}'
+  {%- if config.webhook_configs is defined %}
+    webhook_configs:
+    {%- for name, webhook in config.webhook_configs.iteritems() %}
+    # {{ name }}
+    - url: {{ webhook.url }}
+      {%- if webhook.send_resolved is defined %}
+      send_resolved: {{ webhook.send_resolved | lower }}
+      {%- endif %}
+    {%- endfor %}
+  {%- endif %}
 {%- endif %}
+{%- endfor %}
