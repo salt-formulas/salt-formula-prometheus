@@ -43,7 +43,7 @@ scrape_configs:
   {%- endif %}
 {%- endfor %}
 
-{%- if server.get('target', {}).get('kubernetes', {}).get('enabled', True) %}
+{%- if server.get('target', {}).get('kubernetes', {}).get('enabled', False) %}
   {%- set kubernetes_target = server.target.kubernetes %}
   - job_name: 'kubernetes-api'
     scheme: https
@@ -164,7 +164,7 @@ scrape_configs:
       target_label: kubernetes_pod_name
 {%- endif %}
 
-{%- if server.get('target', {}).get('dns', {}).get('enabled', True) %}
+{%- if server.get('target', {}).get('dns', {}).get('enabled', False) %}
   {%- for target in server.get('target', {}).get('dns', {}).get('endpoint', []) %}
   - job_name: {{ target.name }}
     dns_sd_configs:
