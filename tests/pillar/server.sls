@@ -2,8 +2,8 @@ prometheus:
   server:
     enabled: true
     dir:
-      config: /srv/volumes/prometheus
-      config_in_container: /opt/prometheus/config
+      config: /srv/volumes/prometheus/server
+      data: /srv/volumes/local/prometheus/server
     bind:
       port: 9090
       address: 0.0.0.0

@@ -6,7 +6,7 @@ global:
 {%- endif %}
 
 rule_files:
-- {{ server.dir.config_in_container }}/alerts.yml
+- alerts.yml
 
 {%- set static_target = {} %}
 {%- for node_name, node_grains in salt['mine.get']('*', 'grains.items').iteritems() %}
