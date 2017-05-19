@@ -1,0 +1,56 @@
+---
+driver:
+  name: docker
+  hostname: prometheus.ci.local
+  use_sudo: false
+
+provisioner:
+  name: salt_solo
+  salt_install: bootstrap
+  salt_bootstrap_url: https://bootstrap.saltstack.com
+  salt_version: latest
+  require_chef: false
+  log_level: error
+  formula: prometheus
+  grains:
+    noservices: True
+  state_top:
+    base:
+      "*":
+        - prometheus
+  pillars:
+    top.sls:
+      base:
+        "*":
+          - prometheus
+
+verifier:
+  name: inspec
+  sudo: true
+
+
+platforms:
+  - name: <%=ENV['PLATFORM'] || 'ubuntu-xenial'%>
+    driver_config:
+      image: <%=ENV['PLATFORM'] || 'trevorj/salty-whales:xenial'%>
+      platform: ubuntu
+
+suites:
+
+  - name: alertmanager
+    provisioner:
+      pillars-from-files:
+        prometheus.sls: tests/pillar/alertmanager.sls
+
+## Pushgateway not ready yet
+  # - name: pushgateway_complex
+  #   provisioner:
+  #     pillars-from-files:
+  #       prometheus.sls: tests/pillar/pushgateway_complex.sls
+
+  - name: server
+    provisioner:
+      pillars-from-files:
+        prometheus.sls: tests/pillar/server.sls
+
+# vim: ft=yaml sw=2 ts=2 sts=2 tw=125

@@ -25,44 +25,41 @@ Configure prometheus server
       external_port: 15010
       target:
         dns:
-          - name: 'pushgateway'
-            domain:
-            - 'tasks.prometheus_pushgateway'
-            type: A
-            port: 9091
-          - name: 'prometheus'
-            domain:
-            - 'tasks.prometheus_server'
-            type: A
-            port: 9090
+          enabled: true
+          endpoint:
+            - name: 'pushgateway'
+              domain:
+              - 'tasks.prometheus_pushgateway'
+              type: A
+              port: 9091
+            - name: 'prometheus'
+              domain:
+              - 'tasks.prometheus_server'
+              type: A
+              port: 9090
         kubernetes:
-          api_ip: ${_param:kubernetes_control_address}
+          enabled: true
+          api_ip: 127.0.0.1
           ssl_dir: /opt/prometheus/config
           cert_name: prometheus-server.crt
           key_name: prometheus-server.key
         etcd:
-          scheme: https
-          ssl_dir: /opt/prometheus/config
-          cert_name: prometheus-server.crt
-          key_name: prometheus-server.key
-          member:
-            - host: ${_param:cluster_node01_address}
-              port: ${_param:cluster_node01_port}
-            - host: ${_param:cluster_node02_address}
-              port: ${_param:cluster_node02_port}
-            - host: ${_param:cluster_node03_address}
-              port: ${_param:cluster_node03_port}
+          endpoint:
+            scheme: https
+            ssl_dir: /opt/prometheus/config
+            cert_name: prometheus-server.crt
+            key_name: prometheus-server.key
+            member:
+              - host: ${_param:cluster_node01_address}
+                port: ${_param:cluster_node01_port}
+              - host: ${_param:cluster_node02_address}
+                port: ${_param:cluster_node02_port}
+              - host: ${_param:cluster_node03_address}
+                port: ${_param:cluster_node03_port}
       recording:
-        - name: 'instance:fd_utilization'
+        instance:fd_utilization:
           query: >-
             process_open_fds / process_max_fds
-      alert:
-        PrometheusTargetDown:
-          if: 'up != 1'
-          labels:
-            severity: down
-          annotations:
-            summary: 'Prometheus target down'
       storage:
         local:
           engine: "persisted"

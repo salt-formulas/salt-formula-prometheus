@@ -7,6 +7,7 @@
   file.managed:
   - source: salt://prometheus/files/alertmanager.yml
   - template: jinja
+  - makedirs: True
 
 {%- endif %}
 {%- endif %}

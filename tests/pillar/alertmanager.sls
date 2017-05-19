@@ -1,9 +1,12 @@
 prometheus:
   alertmanager:
     enabled: true
+    dir:
+      config: /srv/volumes/prometheus
     bind:
       address: 0.0.0.0
       port: 9093
+    external_port: 15011
     config:
       global:
         resolve_timeout: 5m
@@ -34,3 +37,12 @@ prometheus:
           webhook_configs:
             - url: http://127.0.0.1
               send_resolved: true
+docker:
+  host:
+    enabled: true
+    experimental: true
+    insecure_registries:
+      - 127.0.0.1
+    log:
+      engine: json-file
+      size: 50m
