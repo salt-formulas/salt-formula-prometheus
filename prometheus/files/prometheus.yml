@@ -5,6 +5,25 @@ global:
 {{ server.config.global | yaml(False) | indent(2, true) }}
 {%- endif %}
 
+{%- if server.get('config', {}).get('alertmanager') %}
+alerting:
+  alertmanagers:
+    {%- for name, alertmanager in server.config.alertmanager.iteritems() %}
+    {%- if alertmanager.get('enabled', True) %}
+    # {{ name }}
+    {%- if alertmanager.static_configs is defined %}
+    - static_configs:
+      - targets: {{ alertmanager.static_configs.get('target', [])|yaml }}
+    {%- elif alertmanager.dns_sd_configs is defined %}
+    - dns_sd_configs:
+      - names: {{ alertmanager.dns_sd_configs.get('domain', [])|yaml }}
+        type: {{ alertmanager.dns_sd_configs.type }}
+        port: {{ alertmanager.dns_sd_configs.port }}
+    {%- endif %}
+    {%- endif %}
+    {%- endfor %}
+{%- endif %}
+
 rule_files:
 - alerts.yml
 

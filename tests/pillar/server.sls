@@ -68,6 +68,14 @@ prometheus:
         evaluation_interval: "1m"
         external_labels:
           region: 'region1'
+      alertmanager:
+        docker_swarm_alertmanager:
+          enabled: true
+          dns_sd_configs:
+            domain:
+              - tasks.monitoring_alertmanager
+            type: A
+            port: 9093
 docker:
   host:
     enabled: true
