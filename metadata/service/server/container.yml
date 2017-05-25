@@ -16,8 +16,7 @@ parameters:
         local:
           engine: "persisted"
           retention: "360h"
-          memory_chunks: 1048576
-          max_chunks_to_persist: 524288
+          target_heap_size: 3221225472
           num_fingerprint_mutexes: 4096
       alertmanager:
         notification_queue_capacity: 10000
