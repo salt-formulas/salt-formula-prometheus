@@ -31,7 +31,8 @@
   {%- if alert.get('enabled', True) %}
     ALERT {{ alertname }}
       IF {{ alert.if }}
-      {%- if alert.for is defined %}FOR {{ alert.for }}{%- endif %}
+      {%- if alert.for is defined %}
+      FOR {{ alert.for }}{%- endif %}
       {%- if alert.labels is defined %}
       LABELS {
         {%- for name, value in alert.labels.iteritems() %}
