@@ -67,6 +67,10 @@ prometheus:
         evaluation_interval: "1m"
         external_labels:
           region: 'region1'
+      remote_write:
+        remote_storage_adapter:
+          enabled: true
+          url: http://127.0.0.1:9201/write
       alertmanager:
         docker_swarm_alertmanager:
           enabled: true

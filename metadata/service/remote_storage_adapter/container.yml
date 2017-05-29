@@ -2,8 +2,8 @@ applications:
   - prometheus
 parameters:
   prometheus:
-    pushgateway:
+    remote_storage_adapter:
       enabled: true
       bind:
         address: 0.0.0.0
-        port: 9091
+        port: 9201
