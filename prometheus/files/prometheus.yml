@@ -24,6 +24,16 @@ alerting:
     {%- endfor %}
 {%- endif %}
 
+{%- if server.get('config', {}).get('remote_write') %}
+remote_write:
+  {%- for name, remote_endpoint in server.config.remote_write.iteritems() %}
+  {%- if remote_endpoint.get('enabled', True) %}
+  # {{ name }}
+  - url: {{ remote_endpoint.url }}
+  {%- endif %}
+  {%- endfor %}
+{%- endif %}
+
 rule_files:
 - alerts.yml
 
