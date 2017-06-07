@@ -40,7 +40,7 @@ parameters:
               severity: 'critical'
             target_match:
               severity: 'warning'
-            equal: ['alertname', 'region', 'service']
+            equal: ['region', 'service']
         receiver:
           HTTP-notification:
             enabled: true
