@@ -1,11 +1,5 @@
 {% set server = salt['grains.filter_by']({
-    'default': {
-        'user': '999',
-    },
 }, merge=salt['pillar.get']('prometheus:server')) %}
 
 {% set alertmanager = salt['grains.filter_by']({
-    'default': {
-        'user': '999',
-    },
 }, merge=salt['pillar.get']('prometheus:alertmanager')) %}
