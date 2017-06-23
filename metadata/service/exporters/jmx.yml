@@ -1,0 +1,13 @@
+applications:
+  - prometheus
+parameters:
+  _param:
+    prometheus_exporter_jmx_port: 9111
+  prometheus:
+    exporters:
+      jmx:
+        enabled: true
+        packages:
+          - jmx-exporter
+        bind:
+          port: ${_param:prometheus_exporter_jmx_port}
