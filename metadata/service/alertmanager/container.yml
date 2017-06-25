@@ -18,7 +18,7 @@ parameters:
           group_wait: 60s
           group_interval: 5m
           repeat_interval: 3h
-          receiver: HTTP-notification
+          receiver: default
         inhibit_rule:
           InhibitCriticalWhenDown:
             enabled: true
@@ -42,9 +42,5 @@ parameters:
               severity: 'warning'
             equal: ['region', 'service']
         receiver:
-          HTTP-notification:
+          default:
             enabled: true
-            webhook_configs:
-              localhost:
-                url: http://127.0.0.1
-                send_resolved: true

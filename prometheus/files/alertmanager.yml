@@ -1,4 +1,31 @@
 {% from "prometheus/map.jinja" import alertmanager with context %}
+{%- macro route_entry(route={}) -%}
+{%- if route.receiver is defined -%}
+receiver: {{ route.receiver }}
+{%- endif -%}
+{%- if route.group_by is defined %}
+group_by:
+  {%- for group_by in route.group_by %}
+- {{ group_by }}
+  {%- endfor %}
+{%- endif %}
+{%- if route.group_interval is defined %}
+group_interval: {{ route.group_interval }}
+{%- endif %}
+{%- if route.group_wait is defined %}
+group_wait: {{ route.group_wait }}
+{%- endif %}
+{%- if route.repeat_interval is defined %}
+repeat_interval: {{ route.repeat_interval }}
+{%- endif %}
+{%- if route.match_re is defined %}
+match_re:
+  {%- for match_re in route.match_re %}
+  {{ match_re.label }}: {{ match_re.value }}
+  {%- endfor %}
+{%- endif %}
+{%- endmacro -%}
+
 global:
 {%- if alertmanager.config.global is defined %}
   {%- if alertmanager.config.global.resolve_timeout is defined %}
@@ -7,8 +34,14 @@ global:
 {%- endif %}
 
 route:
-{%- if alertmanager.config.route is defined %}
-{{ alertmanager.config.route | yaml(False) | indent(2, true) }}
+{%- set config_route = alertmanager.config.get('route', {}) %}
+  {{ route_entry(config_route) | indent(2) }}
+  {%- if config_route.get('routes', {}) %}
+  routes:
+  {%- for route_name, route in config_route.get('routes', {}).iteritems() %}
+  # {{ route_name }}
+  - {{ route_entry(route) | indent(4) }}
+  {%- endfor %}
 {%- endif %}
 
 inhibit_rules:
