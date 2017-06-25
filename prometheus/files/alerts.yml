@@ -33,13 +33,23 @@
       IF {{ alert.if }}
       {%- if alert.for is defined %}
       FOR {{ alert.for }}{%- endif %}
-      {%- if alert.labels is defined %}
+      {#- Handle labels #}
+      {%- if alert.labels is not defined %}
+        {%- do alert.update({'labels': {}}) %}
+      {%- endif %}
+      {%- for label_name, label_value in server.get('config', {}).get('alert', {}).get('labels_add', {}).iteritems() %}
+        {%- if label_name not in alert.labels %}
+          {%- do alert.labels.update({label_name: label_value}) %}
+        {%- endif %}
+      {%- endfor %}
+      {%- if alert.labels %}
       LABELS {
         {%- for name, value in alert.labels.iteritems() %}
         {{ name }} = "{{ value }}"{%- if not loop.last %},{%- endif %}
         {%- endfor %}
       }
       {%- endif %}
+      {#- Handle annotations #}
       {%- if alert.annotations is defined %}
       ANNOTATIONS {
         {%- for name, value in alert.annotations.iteritems() %}
