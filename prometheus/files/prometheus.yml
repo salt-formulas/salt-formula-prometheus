@@ -37,24 +37,26 @@ remote_write:
 rule_files:
 - alerts.yml
 
-{%- set static_target = {} %}
+{%- set static_target = server.target.static %}
 {%- for node_name, node_grains in salt['mine.get']('*', 'grains.items').iteritems() %}
   {%- set static_grain = node_grains.get('prometheus', {}).get('server', {}).get('target', {}).get('static', {}) %}
   {%- for job_name, job in static_grain.iteritems() %}
     {%- if static_target[job_name] is not defined %}
-      {%- do static_target.update({job_name: []}) %}
+      {%- do static_target.update({job_name: {}}) %}
     {%- endif %}
-    {%- for target in job.get('endpoint') %}
-      {%- do static_target[job_name].append(target) %}
+    {%- if static_target[job_name]['endpoint'] is not defined %}
+      {%- do static_target[job_name].update({'endpoint': []}) %}
+    {%- endif %}
+    {%- for target in job.get('endpoint', []) %}
+      {%- do static_target[job_name]['endpoint'].append(target) %}
     {%- endfor %}
   {%- endfor %}
 {%- endfor %}
 
 scrape_configs:
-{%- for job_name, targets in static_target.iteritems() %}
-  {%- set job = server.get('target', {}).get('static', {}).get(job_name, {}) %}
+{%- for job_name, job in static_target.iteritems() %}
   {%- set nodes = [] %}
-  {%- for target in targets + job.get('endpoint', []) %}
+  {%- for target in job.get('endpoint', []) %}
     {%- set address = "'%s:%d'" | format(target.address, target.port) %}
     {%- do nodes.append(address) %}
   {%- endfor %}

@@ -1,5 +1,9 @@
 {% set server = salt['grains.filter_by']({
   'default': {
+    'target': {
+      'static': {
+      },
+    },
   },
 }, merge=salt['pillar.get']('prometheus:server')) %}
 
