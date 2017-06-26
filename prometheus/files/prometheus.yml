@@ -111,7 +111,7 @@ scrape_configs:
       regex: __meta_kubernetes_node_label_(.+)
 
 
-  - job_name: 'kubernetes-service-endpoint'
+  - job_name: 'kubernetes-service-endpoints'
     scheme: https
     tls_config:
       insecure_skip_verify: true
