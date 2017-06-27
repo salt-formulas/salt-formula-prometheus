@@ -1,0 +1,14 @@
+applications:
+  - prometheus
+parameters:
+  _param:
+    prometheus_exporter_libvirt_port: 9177
+  prometheus:
+    exporters:
+      libvirt:
+        enabled: true
+        packages:
+          - libvirt-exporter
+        bind:
+          address: 0.0.0.0
+          port: ${_param:prometheus_exporter_libvirt_port}

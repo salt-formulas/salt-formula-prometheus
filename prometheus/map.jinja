@@ -7,3 +7,8 @@
   'default': {
   },
 }, merge=salt['pillar.get']('prometheus:alertmanager')) %}
+
+{% set exporters = salt['grains.filter_by']({
+  'default': {
+  },
+}, merge=salt['pillar.get']('prometheus:exporters')) %}
