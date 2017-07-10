@@ -6,9 +6,10 @@ parameters:
   prometheus:
     exporters:
       jmx:
-        enabled: true
         packages:
           - jmx-exporter
-        bind:
-          address: 0.0.0.0
-          port: ${_param:prometheus_exporter_jmx_port}
+        services:
+          cassandra:
+            bind:
+              address: 0.0.0.0
+              port: ${_param:prometheus_exporter_jmx_port}

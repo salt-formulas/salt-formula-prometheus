@@ -1,5 +1,4 @@
 {% from "prometheus/map.jinja" import exporters with context %}
-
 {%- for exporter, parameters in exporters.iteritems() %}
   {%- if parameters.get('enabled', False) %}
     {%- if parameters.get('packages', False) %}

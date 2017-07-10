@@ -16,3 +16,4 @@
   'default': {
   },
 }, merge=salt['pillar.get']('prometheus:exporters')) %}
+{%- do salt['defaults.merge'](exporters, grains.get('prometheus', {}).get('exporters', {}))  %}
