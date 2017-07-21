@@ -6,7 +6,6 @@
   pkg.installed:
     - names: {{ parameters.packages }}
     {%- endif %}
-  {%- endif %}
 
 {{ exporter }}_exporter_service:
   service.running:
@@ -15,13 +14,15 @@
     {%- if grains.get('noservices') %}
     - onlyif: /bin/false
     {%- endif %}
+    {%- if parameters.template is defined %}
     - watch:
       - file: {{ exporter }}_exporter_service_config_file
+    {%- endif %}
 
-  {%- for svc, svc_parameters in parameters.get('services', {}).iteritems()  %}
-    {%- if  svc_parameters.get('enabled', False) %}
-      {%- if svc_parameters.template is defined %}
-        {%- set jmxbind = svc_parameters.get('jmx_bind', {}) %}
+    {%- for svc, svc_parameters in parameters.get('services', {}).iteritems()  %}
+      {%- if  svc_parameters.get('enabled', False) %}
+        {%- if svc_parameters.template is defined %}
+          {%- set jmxbind = svc_parameters.get('jmx_bind', {}) %}
 {{ exporter }}_{{ svc }}_exporter_config_file:
   file.managed:
     - name: /etc/exporters/{{ exporter }}_{{ svc }}-running.yml
@@ -37,11 +38,11 @@
       - pkg: {{ exporter }}_exporter_packages
     - watch_in:
       - service: {{ exporter }}_exporter_service
-      {%- endif %}
+        {%- endif %}
 
-      {%- if parameters.template is defined %}
-        {%- set template = parameters.template %}
-        {%- set bind = svc_parameters.get('bind', {}) %}
+        {%- if parameters.template is defined %}
+          {%- set template = parameters.template %}
+          {%- set bind = svc_parameters.get('bind', {}) %}
 {{ exporter }}_exporter_service_config_file:
   file.managed:
     - name: /etc/default/{{ exporter }}-exporter
@@ -58,7 +59,8 @@
       - pkg: {{ exporter }}_exporter_packages
     - watch_in:
       - service: {{ exporter }}_exporter_service
+        {%- endif %}
       {%- endif %}
-    {%- endif %}
-  {%- endfor %}
+    {%- endfor %}
+  {%- endif %}
 {%- endfor %}
