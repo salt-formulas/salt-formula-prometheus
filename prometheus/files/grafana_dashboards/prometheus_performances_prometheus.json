@@ -17,13 +17,7 @@
       "height": "250",
       "panels": [
         {
-          "aliasColors": {
-            "Chunks": "#1F78C1",
-            "Chunks to persist": "#508642",
-            "Max chunks": "#052B51",
-            "Max to persist": "#3F6833",
-            "To persist": "#9AC48A"
-          },
+          "aliasColors": {},
           "bars": false,
           "editable": true,
           "error": false,
@@ -126,12 +120,7 @@
           ]
         },
         {
-          "aliasColors": {
-            "Chunks": "#1F78C1",
-            "Chunks to persist": "#508642",
-            "Max chunks": "#052B51",
-            "Max to persist": "#3F6833"
-          },
+          "aliasColors": {},
           "bars": false,
           "editable": true,
           "error": false,
@@ -307,12 +296,7 @@
       "height": "250",
       "panels": [
         {
-          "aliasColors": {
-            "Chunks": "#1F78C1",
-            "Chunks to persist": "#508642",
-            "Max chunks": "#052B51",
-            "Max to persist": "#3F6833"
-          },
+          "aliasColors": {},
           "bars": false,
           "editable": true,
           "error": false,
@@ -386,12 +370,7 @@
           ]
         },
         {
-          "aliasColors": {
-            "Chunks": "#1F78C1",
-            "Chunks to persist": "#508642",
-            "Max chunks": "#052B51",
-            "Max to persist": "#3F6833"
-          },
+          "aliasColors": {},
           "bars": false,
           "editable": true,
           "error": false,
@@ -575,12 +554,7 @@
       "height": 250,
       "panels": [
         {
-          "aliasColors": {
-            "Chunks": "#1F78C1",
-            "Chunks to persist": "#508642",
-            "Max chunks": "#052B51",
-            "Max to persist": "#3F6833"
-          },
+          "aliasColors": {},
           "bars": false,
           "editable": true,
           "error": false,
@@ -654,12 +628,7 @@
           ]
         },
         {
-          "aliasColors": {
-            "Chunks": "#1F78C1",
-            "Chunks to persist": "#508642",
-            "Max chunks": "#052B51",
-            "Max to persist": "#3F6833"
-          },
+          "aliasColors": {},
           "bars": false,
           "editable": true,
           "error": false,
@@ -741,12 +710,7 @@
           ]
         },
         {
-          "aliasColors": {
-            "Chunks": "#1F78C1",
-            "Chunks to persist": "#508642",
-            "Max chunks": "#052B51",
-            "Max to persist": "#3F6833"
-          },
+          "aliasColors": {},
           "bars": false,
           "editable": true,
           "error": false,
@@ -832,14 +796,7 @@
       "height": 250,
       "panels": [
         {
-          "aliasColors": {
-            "Allocated bytes": "#F9BA8F",
-            "Chunks": "#1F78C1",
-            "Chunks to persist": "#508642",
-            "Max chunks": "#052B51",
-            "Max to persist": "#3F6833",
-            "RSS": "#890F02"
-          },
+          "aliasColors": {},
           "bars": false,
           "editable": true,
           "error": false,
@@ -913,12 +870,7 @@
           ]
         },
         {
-          "aliasColors": {
-            "Chunks": "#1F78C1",
-            "Chunks to persist": "#508642",
-            "Max chunks": "#052B51",
-            "Max to persist": "#3F6833"
-          },
+          "aliasColors": {},
           "bars": false,
           "editable": true,
           "error": false,
@@ -992,12 +944,7 @@
           ]
         },
         {
-          "aliasColors": {
-            "Chunks": "#1F78C1",
-            "Chunks to persist": "#508642",
-            "Max chunks": "#052B51",
-            "Max to persist": "#3F6833"
-          },
+          "aliasColors": {},
           "bars": false,
           "editable": true,
           "error": false,
@@ -1083,18 +1030,7 @@
       "height": 250,
       "panels": [
         {
-          "aliasColors": {
-            "Allocated bytes": "#7EB26D",
-            "Allocated bytes - 1m max": "#BF1B00",
-            "Allocated bytes - 1m min": "#BF1B00",
-            "Allocated bytes - 5m max": "#BF1B00",
-            "Allocated bytes - 5m min": "#BF1B00",
-            "Chunks": "#1F78C1",
-            "Chunks to persist": "#508642",
-            "Max chunks": "#052B51",
-            "Max to persist": "#3F6833",
-            "RSS": "#447EBC"
-          },
+          "aliasColors": {},
           "bars": false,
           "decimals": null,
           "editable": true,
@@ -1198,14 +1134,7 @@
           ]
         },
         {
-          "aliasColors": {
-            "Allocated bytes": "#F9BA8F",
-            "Chunks": "#1F78C1",
-            "Chunks to persist": "#508642",
-            "Max chunks": "#052B51",
-            "Max to persist": "#3F6833",
-            "RSS": "#890F02"
-          },
+          "aliasColors": {},
           "bars": false,
           "editable": true,
           "error": false,
@@ -1379,12 +1308,7 @@
       "height": 250,
       "panels": [
         {
-          "aliasColors": {
-            "Chunks": "#1F78C1",
-            "Chunks to persist": "#508642",
-            "Max chunks": "#052B51",
-            "Max to persist": "#3F6833"
-          },
+          "aliasColors": {},
           "bars": false,
           "editable": true,
           "error": false,
@@ -1458,12 +1382,7 @@
           ]
         },
         {
-          "aliasColors": {
-            "Chunks": "#1F78C1",
-            "Chunks to persist": "#508642",
-            "Max chunks": "#052B51",
-            "Max to persist": "#3F6833"
-          },
+          "aliasColors": {},
           "bars": false,
           "editable": true,
           "error": false,
@@ -1550,12 +1469,7 @@
           ]
         },
         {
-          "aliasColors": {
-            "Chunks": "#1F78C1",
-            "Chunks to persist": "#508642",
-            "Max chunks": "#052B51",
-            "Max to persist": "#3F6833"
-          },
+          "aliasColors": {},
           "bars": false,
           "editable": true,
           "error": false,
@@ -1707,6 +1621,6 @@
   },
   "timezone": "browser",
   "title": "Prometheus Performances",
-  "version": 4
+  "version": 5
 }
 {% endraw %}
