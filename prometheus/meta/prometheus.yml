@@ -1,7 +1,7 @@
 {% raw %}
 server:
   alert:
-    PrometheusUP:
+    PrometheusTargetDown:
       if: 'up != 1'
       labels:
         severity: critical
