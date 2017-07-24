@@ -51,7 +51,7 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "prometheus_local_storage_memory_chunks{job=\"prometheus\",instance=\"$Prometheus:9090\"}",
+              "expr": "prometheus_local_storage_memory_chunks{job=\"prometheus\",instance=~\"$Prometheus:[1-9][0-9]*\"}",
               "intervalFactor": 2,
               "legendFormat": "Chunks",
               "metric": "prometheus_local_storage_memory_chunks",
@@ -59,7 +59,7 @@
               "step": 10
             },
             {
-              "expr": "prometheus_local_storage_chunks_to_persist{job=\"prometheus\",instance=\"$Prometheus:9090\"}",
+              "expr": "prometheus_local_storage_chunks_to_persist{job=\"prometheus\",instance=~\"$Prometheus:[1-9][0-9]*\"}",
               "intervalFactor": 2,
               "legendFormat": "To persist",
               "metric": "prometheus_local_storage_chunks_to_persist",
@@ -133,7 +133,7 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "rate(prometheus_local_storage_chunk_ops_total{job=\"prometheus\",instance=\"$Prometheus:9090\",type=\"create\"}[10m])",
+              "expr": "rate(prometheus_local_storage_chunk_ops_total{job=\"prometheus\",instance=~\"$Prometheus:[1-9][0-9]*\",type=\"create\"}[10m])",
               "intervalFactor": 2,
               "legendFormat": "10m rate",
               "metric": "prometheus_local_storage_chunk_ops_total",
@@ -141,7 +141,7 @@
               "step": 10
             },
             {
-              "expr": "rate(prometheus_local_storage_chunk_ops_total{job=\"prometheus\",instance=\"$Prometheus:9090\",type=\"create\"}[1h])",
+              "expr": "rate(prometheus_local_storage_chunk_ops_total{job=\"prometheus\",instance=~\"$Prometheus:[1-9][0-9]*\",type=\"create\"}[1h])",
               "intervalFactor": 2,
               "legendFormat": "1h rate",
               "metric": "prometheus_local_storage_chunk_ops_total",
@@ -149,7 +149,7 @@
               "step": 10
             },
             {
-              "expr": "rate(prometheus_local_storage_chunk_ops_total{job=\"prometheus\",instance=\"$Prometheus:9090\",type=\"create\"}[6h])",
+              "expr": "rate(prometheus_local_storage_chunk_ops_total{job=\"prometheus\",instance=~\"$Prometheus:[1-9][0-9]*\",type=\"create\"}[6h])",
               "intervalFactor": 2,
               "legendFormat": "6h rate",
               "metric": "prometheus_local_storage_chunk_ops_total",
@@ -223,7 +223,7 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "rate(prometheus_local_storage_chunk_ops_total{job=\"prometheus\",instance=\"$Prometheus:9090\",type=\"persist\"}[10m])",
+              "expr": "rate(prometheus_local_storage_chunk_ops_total{job=\"prometheus\",instance=~\"$Prometheus:[1-9][0-9]*\",type=\"persist\"}[10m])",
               "intervalFactor": 2,
               "legendFormat": "10m rate",
               "metric": "prometheus_local_storage_chunk_ops_total",
@@ -231,7 +231,7 @@
               "step": 10
             },
             {
-              "expr": "rate(prometheus_local_storage_chunk_ops_total{job=\"prometheus\",instance=\"$Prometheus:9090\",type=\"persist\"}[1h])",
+              "expr": "rate(prometheus_local_storage_chunk_ops_total{job=\"prometheus\",instance=~\"$Prometheus:[1-9][0-9]*\",type=\"persist\"}[1h])",
               "intervalFactor": 2,
               "legendFormat": "1h rate",
               "metric": "prometheus_local_storage_chunk_ops_total",
@@ -239,7 +239,7 @@
               "step": 10
             },
             {
-              "expr": "rate(prometheus_local_storage_chunk_ops_total{job=\"prometheus\",instance=\"$Prometheus:9090\",type=\"persist\"}[6h])",
+              "expr": "rate(prometheus_local_storage_chunk_ops_total{job=\"prometheus\",instance=~\"$Prometheus:[1-9][0-9]*\",type=\"persist\"}[6h])",
               "intervalFactor": 2,
               "legendFormat": "6h rate",
               "metric": "prometheus_local_storage_chunk_ops_total",
@@ -287,7 +287,7 @@
       "repeat": null,
       "repeatIteration": null,
       "repeatRowId": null,
-      "showTitle": false,
+      "showTitle": true,
       "title": "Chunks",
       "titleSize": "h6"
     },
@@ -325,7 +325,7 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "prometheus_local_storage_persistence_urgency_score{job=\"prometheus\",instance=\"$Prometheus:9090\"}",
+              "expr": "prometheus_local_storage_persistence_urgency_score{job=\"prometheus\",instance=~\"$Prometheus:[1-9][0-9]*\"}",
               "intervalFactor": 2,
               "legendFormat": "Urgency score",
               "metric": "",
@@ -399,7 +399,7 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "prometheus_local_storage_rushed_mode{job=\"prometheus\",instance=\"$Prometheus:9090\"}",
+              "expr": "prometheus_local_storage_rushed_mode{job=\"prometheus\",instance=~\"$Prometheus:[1-9][0-9]*\"}",
               "intervalFactor": 2,
               "legendFormat": "Rushed Mode",
               "metric": "prometheus_local_storage_rushed_mode",
@@ -407,7 +407,7 @@
               "step": 10
             },
             {
-              "expr": "prometheus_local_storage_checkpointing{job=\"prometheus\",instance=\"$Prometheus:9090\"}",
+              "expr": "prometheus_local_storage_checkpointing{job=\"prometheus\",instance=~\"$Prometheus:[1-9][0-9]*\"}",
               "intervalFactor": 2,
               "legendFormat": "Checkpointing",
               "metric": "prometheus_local_storage_checkpointing",
@@ -481,7 +481,7 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "rate(prometheus_local_storage_ingested_samples_total{job=\"prometheus\",instance=\"$Prometheus:9090\"}[1m])",
+              "expr": "rate(prometheus_local_storage_ingested_samples_total{job=\"prometheus\",instance=~\"$Prometheus:[1-9][0-9]*\"}[1m])",
               "intervalFactor": 2,
               "legendFormat": "samples/s",
               "metric": "prometheus_local_storage_ingested_samples_total",
@@ -529,7 +529,7 @@
       "repeat": null,
       "repeatIteration": null,
       "repeatRowId": null,
-      "showTitle": false,
+      "showTitle": true,
       "title": "Info",
       "titleSize": "h6"
     },
@@ -567,7 +567,7 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "rate(prometheus_local_storage_series_chunks_persisted_sum{job=\"prometheus\",instance=\"$Prometheus:9090\"}[10m]) / rate(prometheus_local_storage_series_chunks_persisted_count{job=\"prometheus\",instance=\"$Prometheus:9090\"}[10m])",
+              "expr": "rate(prometheus_local_storage_series_chunks_persisted_sum{job=\"prometheus\",instance=~\"$Prometheus:[1-9][0-9]*\"}[10m]) / rate(prometheus_local_storage_series_chunks_persisted_count{job=\"prometheus\",instance=~\"$Prometheus:[1-9][0-9]*\"}[10m])",
               "intervalFactor": 2,
               "legendFormat": "Chunks per Series",
               "metric": "prometheus_local_storage_series_chunks_persisted_count",
@@ -641,7 +641,7 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "rate(prometheus_local_storage_series_ops_total{job=\"prometheus\",instance=\"$Prometheus:9090\",type=\"maintenance_in_memory\"}[10m])",
+              "expr": "rate(prometheus_local_storage_series_ops_total{job=\"prometheus\",instance=~\"$Prometheus:[1-9][0-9]*\",type=\"maintenance_in_memory\"}[10m])",
               "intervalFactor": 2,
               "legendFormat": "Memory Series/s",
               "metric": "prometheus_local_storage_series_ops_total",
@@ -649,7 +649,7 @@
               "step": 10
             },
             {
-              "expr": "rate(prometheus_local_storage_series_chunks_persisted_count{job=\"prometheus\",instance=\"$Prometheus:9090\"}[10m])",
+              "expr": "rate(prometheus_local_storage_series_chunks_persisted_count{job=\"prometheus\",instance=~\"$Prometheus:[1-9][0-9]*\"}[10m])",
               "intervalFactor": 2,
               "legendFormat": "Series Persisted/s",
               "metric": "prometheus_local_storage_series_chunks_persisted_count",
@@ -723,7 +723,7 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "rate(prometheus_local_storage_maintain_series_duration_seconds_sum{job=\"prometheus\",instance=\"$Prometheus:9090\",location=\"memory\"}[10m]) / rate(prometheus_local_storage_maintain_series_duration_seconds_count{job=\"prometheus\",instance=\"$Prometheus:9090\",location=\"memory\"}[10m])",
+              "expr": "rate(prometheus_local_storage_maintain_series_duration_seconds_sum{job=\"prometheus\",instance=~\"$Prometheus:[1-9][0-9]*\",location=\"memory\"}[10m]) / rate(prometheus_local_storage_maintain_series_duration_seconds_count{job=\"prometheus\",instance=~\"$Prometheus:[1-9][0-9]*\",location=\"memory\"}[10m])",
               "intervalFactor": 2,
               "legendFormat": "Maintenance Duration",
               "metric": "prometheus_local_storage_maintain_series_duration_seconds_count",
@@ -771,7 +771,7 @@
       "repeat": null,
       "repeatIteration": null,
       "repeatRowId": null,
-      "showTitle": false,
+      "showTitle": true,
       "title": "Maintenance",
       "titleSize": "h6"
     },
@@ -809,7 +809,7 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "prometheus_local_storage_checkpoint_last_duration_seconds{job=\"prometheus\",instance=\"$Prometheus:9090\"} or prometheus_local_storage_checkpoint_duration_seconds{job=\"prometheus\",instance=\"$Prometheus:9090\",quantile=\"\"}",
+              "expr": "prometheus_local_storage_checkpoint_last_duration_seconds{job=\"prometheus\",instance=~\"$Prometheus:[1-9][0-9]*\"} or prometheus_local_storage_checkpoint_duration_seconds{job=\"prometheus\",instance=~\"$Prometheus:[1-9][0-9]*\",quantile=\"\"}",
               "intervalFactor": 2,
               "legendFormat": "Checkpoint duration",
               "metric": "last",
@@ -883,7 +883,7 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "prometheus_local_storage_checkpoint_last_size_bytes{job=\"prometheus\",instance=\"$Prometheus:9090\"}",
+              "expr": "prometheus_local_storage_checkpoint_last_size_bytes{job=\"prometheus\",instance=~\"$Prometheus:[1-9][0-9]*\"}",
               "intervalFactor": 2,
               "legendFormat": "Checkpoint size",
               "metric": "prometheus_local_storage_checkpoint_last_size_bytes",
@@ -957,7 +957,7 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "irate(prometheus_local_storage_checkpoint_series_chunks_written_sum{job=\"prometheus\",instance=\"$Prometheus:9090\"}[1m])",
+              "expr": "irate(prometheus_local_storage_checkpoint_series_chunks_written_sum{job=\"prometheus\",instance=~\"$Prometheus:[1-9][0-9]*\"}[1m])",
               "intervalFactor": 2,
               "legendFormat": "Checkpoint chunks written/s",
               "metric": "prometheus_local_storage_checkpoint_series_chunks_written_sum",
@@ -1005,7 +1005,7 @@
       "repeat": null,
       "repeatIteration": null,
       "repeatRowId": null,
-      "showTitle": false,
+      "showTitle": true,
       "title": "Checkpoints",
       "titleSize": "h6"
     },
@@ -1049,7 +1049,7 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "process_resident_memory_bytes{job=\"prometheus\",instance=\"$Prometheus:9090\"}",
+              "expr": "process_resident_memory_bytes{job=\"prometheus\",instance=~\"$Prometheus:[1-9][0-9]*\"}",
               "intervalFactor": 2,
               "legendFormat": "RSS",
               "metric": "process_resident_memory_bytes",
@@ -1057,7 +1057,7 @@
               "step": 10
             },
             {
-              "expr": "max_over_time(go_memstats_alloc_bytes{job=\"prometheus\",instance=\"$Prometheus:9090\"}[5m])",
+              "expr": "max_over_time(go_memstats_alloc_bytes{job=\"prometheus\",instance=~\"$Prometheus:[1-9][0-9]*\"}[5m])",
               "intervalFactor": 2,
               "legendFormat": "Allocated bytes - 5m max",
               "metric": "go_memstats_alloc_bytes",
@@ -1065,7 +1065,7 @@
               "step": 10
             },
             {
-              "expr": "go_memstats_alloc_bytes{job=\"prometheus\",instance=\"$Prometheus:9090\"}",
+              "expr": "go_memstats_alloc_bytes{job=\"prometheus\",instance=~\"$Prometheus:[1-9][0-9]*\"}",
               "intervalFactor": 2,
               "legendFormat": "Allocated bytes",
               "metric": "go_memstats_alloc_bytes",
@@ -1073,9 +1073,9 @@
               "step": 10
             },
             {
-              "expr": "min_over_time(go_memstats_alloc_bytes{job=\"prometheus\",instance=\"$Prometheus:9090\"}[5m])",
+              "expr": "min_over_time(go_memstats_alloc_bytes{job=\"prometheus\",instance=~\"$Prometheus:[1-9][0-9]*\"}[5m])",
               "intervalFactor": 2,
-              "legendFormat": "Allocated bytes - 5m min {{instance}}",
+              "legendFormat": "Allocated bytes - 5m min",
               "metric": "go_memstats_alloc_bytes",
               "refId": "C",
               "step": 10
@@ -1147,7 +1147,7 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "rate(go_memstats_alloc_bytes_total{job=\"prometheus\",instance=\"$Prometheus:9090\"}[1m])",
+              "expr": "rate(go_memstats_alloc_bytes_total{job=\"prometheus\",instance=~\"$Prometheus:[1-9][0-9]*\"}[1m])",
               "intervalFactor": 2,
               "legendFormat": "Allocated Bytes/s",
               "metric": "go_memstats_alloc_bytes",
@@ -1225,7 +1225,7 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "irate(process_cpu_seconds_total{job=\"prometheus\",instance=\"$Prometheus:9090\"}[1m])",
+              "expr": "irate(process_cpu_seconds_total{job=\"prometheus\",instance=~\"$Prometheus:[1-9][0-9]*\"}[1m])",
               "intervalFactor": 2,
               "legendFormat": "Irate",
               "metric": "prometheus_local_storage_ingested_samples_total",
@@ -1233,7 +1233,7 @@
               "step": 10
             },
             {
-              "expr": "rate(process_cpu_seconds_total{job=\"prometheus\",instance=\"$Prometheus:9090\"}[5m])",
+              "expr": "rate(process_cpu_seconds_total{job=\"prometheus\",instance=~\"$Prometheus:[1-9][0-9]*\"}[5m])",
               "intervalFactor": 2,
               "legendFormat": "5m rate",
               "metric": "prometheus_local_storage_ingested_samples_total",
@@ -1283,8 +1283,8 @@
       "repeat": null,
       "repeatIteration": null,
       "repeatRowId": null,
-      "showTitle": false,
-      "title": "RAM&CPU",
+      "showTitle": true,
+      "title": "Memory & CPU",
       "titleSize": "h6"
     },
     {
@@ -1321,7 +1321,7 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "prometheus_local_storage_memory_series{job=\"prometheus\",instance=\"$Prometheus:9090\"}",
+              "expr": "prometheus_local_storage_memory_series{job=\"prometheus\",instance=~\"$Prometheus:[1-9][0-9]*\"}",
               "intervalFactor": 2,
               "legendFormat": "Time series",
               "metric": "prometheus_local_storage_memory_series",
@@ -1400,7 +1400,7 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "rate(prometheus_local_storage_indexing_batch_sizes_sum{job=\"prometheus\",instance=\"$Prometheus:9090\"}[1m])",
+              "expr": "rate(prometheus_local_storage_indexing_batch_sizes_sum{job=\"prometheus\",instance=~\"$Prometheus:[1-9][0-9]*\"}[1m])",
               "intervalFactor": 2,
               "legendFormat": "Indexed/s",
               "metric": "prometheus_local_storage_indexing_batch_sizes_sum",
@@ -1408,7 +1408,7 @@
               "step": 10
             },
             {
-              "expr": "prometheus_local_storage_indexing_queue_length{job=\"prometheus\",instance=\"$Prometheus:9090\"}",
+              "expr": "prometheus_local_storage_indexing_queue_length{job=\"prometheus\",instance=~\"$Prometheus:[1-9][0-9]*\"}",
               "intervalFactor": 2,
               "legendFormat": "Queue length",
               "metric": "prometheus_local_storage_indexing_queue_length",
@@ -1482,7 +1482,7 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "prometheus_local_storage_memory_chunkdescs{job=\"prometheus\",instance=\"$Prometheus:9090\"}",
+              "expr": "prometheus_local_storage_memory_chunkdescs{job=\"prometheus\",instance=~\"$Prometheus:[1-9][0-9]*\"}",
               "intervalFactor": 2,
               "legendFormat": "Chunk Descs",
               "metric": "prometheus_local_storage_memory_chunkdescs",
@@ -1530,26 +1530,17 @@
       "repeat": null,
       "repeatIteration": null,
       "repeatRowId": null,
-      "showTitle": false,
+      "showTitle": true,
       "title": "Time series",
-      "titleSize": "h6"
-    },
-    {
-      "collapse": false,
-      "height": 250,
-      "panels": [],
-      "repeat": null,
-      "repeatIteration": null,
-      "repeatRowId": null,
-      "showTitle": false,
-      "title": "Node",
       "titleSize": "h6"
     }
   ],
   "schemaVersion": 14,
   "sharedCrosshair": true,
   "style": "dark",
-  "tags": [],
+  "tags": [
+    "prometheus"
+  ],
   "templating": {
     "list": [
       {
@@ -1557,15 +1548,15 @@
         "current": {},
         "hide": 0,
         "includeAll": false,
-        "label": null,
+        "label": "Prometheus host",
         "multi": false,
         "name": "Prometheus",
         "options": [],
         "query": "query_result(up{job=\"prometheus\"} == 1)",
         "refresh": 1,
         "refresh_on_load": true,
-        "regex": ".*instance=\"([^\"]+):9090\".*",
-        "sort": 0,
+        "regex": ".*instance=\"([^:]+):[1-9][0-9]*\".*",
+        "sort": 1,
         "tagValuesQuery": null,
         "tags": [],
         "tagsQuery": null,
@@ -1605,6 +1596,6 @@
   },
   "timezone": "browser",
   "title": "Prometheus Performances",
-  "version": 7
+  "version": 8
 }
 {% endraw %}
