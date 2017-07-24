@@ -199,7 +199,7 @@
           "editable": true,
           "error": false,
           "fill": 1,
-          "id": 1,
+          "id": 13,
           "legend": {
             "avg": false,
             "current": false,
@@ -223,18 +223,34 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "rate(prometheus_local_storage_ingested_samples_total{job=\"prometheus\",instance=\"$Prometheus:9090\"}[1m])",
+              "expr": "rate(prometheus_local_storage_chunk_ops_total{job=\"prometheus\",instance=\"$Prometheus:9090\",type=\"persist\"}[10m])",
               "intervalFactor": 2,
-              "legendFormat": "samples/s",
-              "metric": "prometheus_local_storage_ingested_samples_total",
+              "legendFormat": "10m rate",
+              "metric": "prometheus_local_storage_chunk_ops_total",
               "refId": "A",
+              "step": 10
+            },
+            {
+              "expr": "rate(prometheus_local_storage_chunk_ops_total{job=\"prometheus\",instance=\"$Prometheus:9090\",type=\"persist\"}[1h])",
+              "intervalFactor": 2,
+              "legendFormat": "1h rate",
+              "metric": "prometheus_local_storage_chunk_ops_total",
+              "refId": "B",
+              "step": 10
+            },
+            {
+              "expr": "rate(prometheus_local_storage_chunk_ops_total{job=\"prometheus\",instance=\"$Prometheus:9090\",type=\"persist\"}[6h])",
+              "intervalFactor": 2,
+              "legendFormat": "6h rate",
+              "metric": "prometheus_local_storage_chunk_ops_total",
+              "refId": "C",
               "step": 10
             }
           ],
           "thresholds": [],
           "timeFrom": null,
           "timeShift": null,
-          "title": "Samples Ingested",
+          "title": "Chunks Persisted",
           "tooltip": {
             "msResolution": false,
             "shared": true,
@@ -251,7 +267,7 @@
           "yaxes": [
             {
               "format": "short",
-              "label": "",
+              "label": null,
               "logBase": 1,
               "max": null,
               "min": "0",
@@ -359,96 +375,6 @@
           "editable": true,
           "error": false,
           "fill": 1,
-          "id": 13,
-          "legend": {
-            "avg": false,
-            "current": false,
-            "max": false,
-            "min": false,
-            "show": true,
-            "total": false,
-            "values": false
-          },
-          "lines": true,
-          "linewidth": 1,
-          "links": [],
-          "nullPointMode": "null",
-          "percentage": false,
-          "pointradius": 5,
-          "points": false,
-          "renderer": "flot",
-          "seriesOverrides": [],
-          "span": 4,
-          "stack": false,
-          "steppedLine": false,
-          "targets": [
-            {
-              "expr": "rate(prometheus_local_storage_chunk_ops_total{job=\"prometheus\",instance=\"$Prometheus:9090\",type=\"persist\"}[10m])",
-              "intervalFactor": 2,
-              "legendFormat": "10m rate",
-              "metric": "prometheus_local_storage_chunk_ops_total",
-              "refId": "A",
-              "step": 10
-            },
-            {
-              "expr": "rate(prometheus_local_storage_chunk_ops_total{job=\"prometheus\",instance=\"$Prometheus:9090\",type=\"persist\"}[1h])",
-              "intervalFactor": 2,
-              "legendFormat": "1h rate",
-              "metric": "prometheus_local_storage_chunk_ops_total",
-              "refId": "B",
-              "step": 10
-            },
-            {
-              "expr": "rate(prometheus_local_storage_chunk_ops_total{job=\"prometheus\",instance=\"$Prometheus:9090\",type=\"persist\"}[6h])",
-              "intervalFactor": 2,
-              "legendFormat": "6h rate",
-              "metric": "prometheus_local_storage_chunk_ops_total",
-              "refId": "C",
-              "step": 10
-            }
-          ],
-          "thresholds": [],
-          "timeFrom": null,
-          "timeShift": null,
-          "title": "Chunks Persisted",
-          "tooltip": {
-            "msResolution": false,
-            "shared": true,
-            "sort": 0,
-            "value_type": "individual"
-          },
-          "type": "graph",
-          "xaxis": {
-            "mode": "time",
-            "name": null,
-            "show": true,
-            "values": []
-          },
-          "yaxes": [
-            {
-              "format": "short",
-              "label": null,
-              "logBase": 1,
-              "max": null,
-              "min": "0",
-              "show": true
-            },
-            {
-              "format": "short",
-              "label": null,
-              "logBase": 1,
-              "max": null,
-              "min": null,
-              "show": true
-            }
-          ]
-        },
-        {
-          "aliasColors": {},
-          "bars": false,
-          "editable": true,
-          "error": false,
-          "fill": 1,
           "id": 15,
           "legend": {
             "avg": true,
@@ -493,6 +419,80 @@
           "timeFrom": null,
           "timeShift": null,
           "title": "Modes",
+          "tooltip": {
+            "msResolution": false,
+            "shared": true,
+            "sort": 0,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "format": "short",
+              "label": "",
+              "logBase": 1,
+              "max": null,
+              "min": "0",
+              "show": true
+            },
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ]
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "editable": true,
+          "error": false,
+          "fill": 1,
+          "id": 1,
+          "legend": {
+            "avg": false,
+            "current": false,
+            "max": false,
+            "min": false,
+            "show": true,
+            "total": false,
+            "values": false
+          },
+          "lines": true,
+          "linewidth": 1,
+          "links": [],
+          "nullPointMode": "null",
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "span": 4,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "expr": "rate(prometheus_local_storage_ingested_samples_total{job=\"prometheus\",instance=\"$Prometheus:9090\"}[1m])",
+              "intervalFactor": 2,
+              "legendFormat": "samples/s",
+              "metric": "prometheus_local_storage_ingested_samples_total",
+              "refId": "A",
+              "step": 10
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "Samples Ingested",
           "tooltip": {
             "msResolution": false,
             "shared": true,
@@ -1605,6 +1605,6 @@
   },
   "timezone": "browser",
   "title": "Prometheus Performances",
-  "version": 6
+  "version": 7
 }
 {% endraw %}
