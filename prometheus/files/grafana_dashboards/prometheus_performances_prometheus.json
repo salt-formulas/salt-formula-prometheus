@@ -65,22 +65,6 @@
               "metric": "prometheus_local_storage_chunks_to_persist",
               "refId": "B",
               "step": 10
-            },
-            {
-              "expr": "prometheus_local_storage_max_memory_chunks{job=\"prometheus\",instance=\"$Prometheus:9090\"}",
-              "intervalFactor": 2,
-              "legendFormat": "Max chunks",
-              "metric": "prometheus_local_storage_max_memory_chunks",
-              "refId": "D",
-              "step": 10
-            },
-            {
-              "expr": "prometheus_local_storage_max_chunks_to_persist{job=\"prometheus\",instance=\"$Prometheus:9090\"}",
-              "intervalFactor": 2,
-              "legendFormat": "Max to persist",
-              "metric": "prometheus_local_storage_max_chunks_to_persist",
-              "refId": "C",
-              "step": 10
             }
           ],
           "thresholds": [],
@@ -1621,6 +1605,6 @@
   },
   "timezone": "browser",
   "title": "Prometheus Performances",
-  "version": 5
+  "version": 6
 }
 {% endraw %}
