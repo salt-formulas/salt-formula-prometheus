@@ -17,3 +17,17 @@
   },
 }, merge=salt['pillar.get']('prometheus:exporters')) %}
 {%- do salt['defaults.merge'](exporters, grains.get('prometheus', {}).get('exporters', {}))  %}
+
+{%- set monitoring = salt['grains.filter_by']({
+  'default': {
+    'remote_storage_adapter': {
+      'sent_vs_received_ratio': 10.0,
+      'ignored_vs_sent_ratio': 5.0,
+    },
+  },
+}, grain='os_family', merge=salt['pillar.get']('prometheus:monitoring')) %}
+
+{% set remote_storage_adapter = salt['grains.filter_by']({
+  'default': {
+  },
+}, merge=salt['pillar.get']('prometheus:remote_storage_adapter')) %}
