@@ -1,7 +1,10 @@
-{% raw %}
+{%- if pillar.prometheus is defined %}
+{%- from "prometheus/map.jinja" import server, remote_storage_adapter, monitoring with context %}
 server:
   alert:
-    PrometheusUP:
+{%- if server.get('enabled', False) %}
+{% raw %}
+    PrometheusTargetDown:
       if: 'up != 1'
       labels:
         severity: critical
@@ -10,3 +13,29 @@ server:
         summary: 'Prometheus endpoint {{ $labels.instance }} is down'
         description: 'Prometheus endpoint {{ $labels.instance }} is down for job {{ $labels.job }}'
 {% endraw %}
+{%- endif %}
+{%- if remote_storage_adapter.get('enabled', False) %}
+    RemoteStorageAdapterSendingTooSlow:
+      {%- set threshold = monitoring.remote_storage_adapter.sent_vs_received_ratio|float %}
+      if: >-
+        100.0 - (100.0 * sent_samples_total{job="remote_storage_adapter"} / on (job, instance) received_samples_total) > {{ threshold }}
+{% raw %}
+      labels:
+        severity: warning
+        service: remote_storage_adapter
+      annotations:
+        summary: 'Remote storage adapter too slow on {{ $labels.instance }}'
+        description: 'Remote storage adapter can not ingest samples fast enough on {{ $labels.instance }} (current value={{ $value }}%, threshold={%- endraw %}{{ threshold }}%).'
+    RemoteStorageAdapterIgnoredTooHigh:
+      {%- set threshold = monitoring.remote_storage_adapter.ignored_vs_sent_ratio|float %}
+      if: >-
+        100.0 * prometheus_influxdb_ignored_samples_total{job="remote_storage_adapter"} / on (job, instance) sent_samples_total > {{ threshold }}
+{% raw %}
+      labels:
+        severity: warning
+        service: remote_storage_adapter
+      annotations:
+        summary: 'Remote storage adapter receiving too many invalid metrics on {{ $labels.instance }}'
+        description: 'Remote storage adapter is receiving too many invalid metrics on {{ $labels.instance }} (current value={{ $value }}%, threshold={%- endraw %}{{ threshold }}%).'
+{%- endif %}
+{%- endif %}
