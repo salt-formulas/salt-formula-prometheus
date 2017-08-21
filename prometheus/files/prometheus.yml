@@ -44,6 +44,7 @@ rule_files:
     {%- if static_target[job_name] is not defined %}
       {%- do static_target.update({job_name: {
         'enabled': job.get('enabled', True),
+        'metrics_path': job.get('metrics_path', '/metrics'),
         'scheme': job.get('scheme', 'http')}
       }) %}
       {%- if job.get('tls_config') %}
@@ -81,6 +82,7 @@ scrape_configs:
   {%- if nodes|length > 0 and job.get('enabled', True) %}
   - job_name: {{ job_name }}
     {% if job.get('scheme') %}scheme: {{ job.scheme }}{%- endif %}
+    {% if job.get('metrics_path') %}metrics_path: {{ job.metrics_path }}{%- endif %}
     {%- if job.get('tls_config') %}
     tls_config:
       {% if job.tls_config.get('skip_verify') is defined %}insecure_skip_verify: {{ job.tls_config.skip_verify | lower }}{%- endif %}
