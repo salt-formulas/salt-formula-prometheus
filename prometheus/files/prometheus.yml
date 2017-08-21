@@ -243,10 +243,3 @@ scrape_configs:
       port: {{ target.port }}
   {%- endfor %}
 {%- endif %}
-
-{%- if grains.get('jenkins_plugins', {}).get('prometheus', {}).get('version', False) %}
-  - job_name: jenkins
-    metrics_path: '/prometheus'
-    static_configs:
-    - targets: ['{{ pillar.get('jenkins').get('client').get('master').get('host') }}:{{ pillar.get('jenkins').get('client').get('master').get('port') }}']
-{%- endif %}
