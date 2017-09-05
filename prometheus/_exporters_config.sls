@@ -3,7 +3,13 @@
         {%- do salt['defaults.merge'](exporters, new_exporters_cfg['exporters']) %}
       {%- endif %}
       {%- set host = grains.get('host', "") %}
-      {%- set host_ip_address = grains['fqdn_ip4'][0] %}
+      {%- set fqdn_ip4_addresses = [] %}
+      {%- for addr in grains['fqdn_ip4'] %}
+        {%- if not addr.startswith('127.') %}
+          {%- do fqdn_ip4_addresses.append(addr) %}
+        {%- endif %}
+      {%- endfor %}
+      {%- set host_ip_address = fqdn_ip4_addresses[0] %}
       {%- load_yaml as svc_configs %}
         {%- for exporter, parameters in exporters.iteritems() %}
           {%- if parameters.get('enabled', False) %}
