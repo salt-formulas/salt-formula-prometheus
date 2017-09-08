@@ -3,6 +3,12 @@ applications:
 classes:
  - service.prometheus.support
 parameters:
+  _param:
+    prometheus_evaluation_interval: "15s"
+    prometheus_region_label: "region1"
+    prometheus_scrape_interval: "15s"
+    prometheus_storage_retention: "360h"
+    prometheus_storage_heap_size: 3221225472
   prometheus:
     server:
       enabled: true
@@ -16,15 +22,15 @@ parameters:
       storage:
         local:
           engine: "persisted"
-          retention: "360h"
-          target_heap_size: 3221225472
+          retention: ${_param:prometheus_storage_retention}
+          target_heap_size: ${_param:prometheus_storage_heap_size}
           num_fingerprint_mutexes: 4096
       alertmanager:
         notification_queue_capacity: 10000
       config:
         global:
-          scrape_interval: "15s"
+          scrape_interval: ${_param:prometheus_scrape_interval}
           scrape_timeout: "15s"
-          evaluation_interval: "1m"
+          evaluation_interval: ${_param:prometheus_evaluation_interval}
           external_labels:
-            region: 'region1'
+            region: ${_param:prometheus_region_label}
