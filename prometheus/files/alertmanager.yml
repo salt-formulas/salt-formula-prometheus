@@ -76,6 +76,44 @@ receivers:
       send_resolved: {{ webhook.send_resolved | lower }}
       {%- endif %}
     {%- endfor %}
+  {%- elif config.slack_configs is defined %}
+    slack_configs:
+    {%- for name, slack in config.slack_configs.iteritems() %}
+    # {{ name }}
+    - api_url: {{ slack.api_url }}
+      {%- if slack.send_resolved is defined %}
+      send_resolved: {{ slack.send_resolved | lower }}
+      {%- endif %}
+      {%- if slack.channel is defined %}
+      channel: {{ slack.channel }}
+      {%- endif %}
+    {%- endfor %}
+  {%- elif config.email_configs is defined %}
+    email_configs:
+    {%- for name, email in config.email_configs.iteritems() %}
+    # {{ name }}
+    - to: {{ email.to }}
+      from: {{ email.from }}
+      smarthost: {{ email.smarthost }}
+      {%- if email.auth_username is defined %}
+      auth_username: '{{ email.auth_username }}'
+      {%- endif %}
+      {%- if email.auth_password is defined %}
+      auth_password: '{{ email.auth_password }}'
+      {%- endif %}
+      {%- if email.auth_secret is defined %}
+      auth_secret: '{{ email.auth_secret }}'
+      {%- endif %}
+      {%- if email.auth_identity is defined %}
+      auth_identity: '{{ email.auth_identity}}'
+      {%- endif %}
+      {%- if email.require_tls is defined %}
+      require_tls: {{ email.require_tls | lower }}
+      {%- endif %}
+      {%- if email.send_resolved is defined %}
+      send_resolved: {{ email.send_resolved | lower }}
+      {%- endif %}
+    {%- endfor %}
   {%- endif %}
 {%- endif %}
 {%- endfor %}

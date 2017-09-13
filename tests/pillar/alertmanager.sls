@@ -38,6 +38,18 @@ prometheus:
           webhook_configs:
             - url: http://127.0.0.1
               send_resolved: true
+        - name: 'HTTP-slack'
+          slack_configs:
+            - api_url: http://127.0.0.1/slack
+              send_resolved: true
+        - name: 'smtp'
+          email_configs:
+            - to: test@example.com
+              from: test@example.com
+              smarthost: example.com
+              auth_username: username
+              auth_password: password
+              send_resolved: true
 docker:
   host:
     enabled: true
