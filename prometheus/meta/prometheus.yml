@@ -6,12 +6,13 @@ server:
 {% raw %}
     PrometheusTargetDown:
       if: 'up != 1'
+      for: 2m
       labels:
         severity: critical
         service: prometheus
       annotations:
-        summary: 'Prometheus endpoint {{ $labels.instance }} is down'
-        description: 'Prometheus endpoint {{ $labels.instance }} is down for job {{ $labels.job }}'
+        summary: 'Prometheus endpoint {{ $labels.instance }} down'
+        description: 'The Prometheus target {{ $labels.instance }} is down for the job {{ $labels.job }}.'
 {% endraw %}
 {%- endif %}
 {%- if remote_storage_adapter.get('enabled', False) %}
