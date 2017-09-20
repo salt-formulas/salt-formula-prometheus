@@ -110,8 +110,15 @@ scrape_configs:
   {%- endif %}
 {%- endfor %}
 
-{%- if server.get('target', {}).get('kubernetes', {}).get('enabled', False) %}
-  {%- set kubernetes_target = server.target.kubernetes %}
+{%- set kubernetes_target = {} %}
+{%- for node_name, node_grains in salt['mine.get']('*', 'grains.items').iteritems() %}
+  {%- set kubernetes_grain = node_grains.get('prometheus', {}).get('server', {}).get('target', {}).get('kubernetes', {}) %}
+  {%- if kubernetes_grain %}
+    {%- do kubernetes_target.update(kubernetes_grain) %}
+  {%- endif %}
+{%- endfor %}
+
+{%- if kubernetes_target.get('enabled', False) %}
 
   - job_name: 'kubernetes-api'
     scheme: https
@@ -147,6 +154,32 @@ scrape_configs:
     relabel_configs:
     - action: labelmap
       regex: __meta_kubernetes_node_label_(.+)
+
+  - job_name: 'kubernetes-cadvisor'
+    scheme: https
+    tls_config:
+      insecure_skip_verify: true
+      {% if kubernetes_target.get('cert_name') %}cert_file: {{ server.dir.config_in_container }}/{{ kubernetes_target.cert_name }}{%- endif %}
+      {% if kubernetes_target.get('key_name') %}key_file: {{ server.dir.config_in_container }}/{{ kubernetes_target.key_name }}{%- endif %}
+    kubernetes_sd_configs:
+    - api_server: {{ kubernetes_target.api_ip }}
+      role: node
+      tls_config:
+        insecure_skip_verify: true
+        {% if kubernetes_target.get('cert_name') %}cert_file: {{ server.dir.config_in_container }}/{{ kubernetes_target.cert_name }}{%- endif %}
+        {% if kubernetes_target.get('key_name') %}key_file: {{ server.dir.config_in_container }}/{{ kubernetes_target.key_name }}{%- endif %}
+    relabel_configs:
+    - action: labelmap
+      regex: __meta_kubernetes_node_label_(.+)
+    - source_labels: [__address__]
+      action: replace
+      target_label: __address__
+      regex: (.+)(?::\d+)
+      replacement: $1:{{ kubernetes_target.get('cadvisor', {}).get('port', 4194) }}
+    - source_labels: [__scheme__]
+      action: replace
+      target_label: __scheme__
+      replacement: {{ kubernetes_target.get('cadvisor', {}).get('scheme', 'http') }}
 
   {%- if kubernetes_target.get('endpoint', {}).get('enabled') %}
   - job_name: 'kubernetes-service-endpoints'
