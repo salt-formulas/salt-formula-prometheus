@@ -24,6 +24,12 @@
       'sent_vs_received_ratio': 10.0,
       'ignored_vs_sent_ratio': 5.0,
     },
+    'alertmanager': {
+      'notification_failed_rate': 0.3
+    },
+    'prometheus': {
+      'remote_storage_queue_full_percent': 75.0,
+    },
   },
 }, grain='os_family', merge=salt['pillar.get']('prometheus:monitoring')) %}
 
