@@ -11,4 +11,11 @@ dashboard:
     datasource: prometheus
     format: json
     template: prometheus/files/grafana_dashboards/prometheus_stats_prometheus.json
-
+  alertmanager_prometheus:
+    datasource: prometheus
+    format: json
+    template: prometheus/files/grafana_dashboards/alertmanager_prometheus.json
+  pushgateway_prometheus:
+    datasource: prometheus
+    format: json
+    template: prometheus/files/grafana_dashboards/pushgateway_prometheus.json
