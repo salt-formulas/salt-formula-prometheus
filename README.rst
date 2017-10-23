@@ -18,6 +18,7 @@ Configure prometheus server
       enabled: true
       dir:
         config: /srv/volumes/prometheus
+        data: /srv/volumes/prometheus/server
         config_in_container: /opt/prometheus/config
       bind:
         port: 9090
@@ -86,7 +87,8 @@ Configure alertmanager
     alertmanager:
       enabled: true
       dir:
-        config: /srv/volumes/prometheus
+        config: /srv/volumes/prometheus/alertmanager
+        data: /srv/volumes/local/prometheus/alertmanager
       bind:
         address: 0.0.0.0
         port: 9093
