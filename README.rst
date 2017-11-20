@@ -95,43 +95,62 @@ Configure alertmanager
         global:
           resolve_timeout: 5m
         route:
-          group_by: ['alertname', 'region', 'service']
+          group_by: ['region', 'service']
           group_wait: 60s
           group_interval: 5m
           repeat_interval: 3h
-          receiver: HTTP-notification
-        inhibit_rules:
-          - source_match:
+          receiver: default
+        inhibit_rule:
+          InhibitCriticalWhenDown:
+            enabled: true
+            source_match:
               severity: 'down'
             target_match:
               severity: 'critical'
             equal: ['region', 'service']
-          - source_match:
+          InhibitWarningWhenDown:
+            enabled: true
+            source_match:
               severity: 'down'
             target_match:
               severity: 'warning'
             equal: ['region', 'service']
-          - source_match:
+          InhibitWarningWhenCritical:
+            enabled: true
+            source_match:
               severity: 'critical'
             target_match:
               severity: 'warning'
-            equal: ['alertname', 'region', 'service']
-        receivers:
-          - name: 'HTTP-notification'
+            equal: ['region', 'service']
+        receiver:
+          HTTP-notification:
             webhook_configs:
-              - url: http://127.0.0.1
+              localhost:
+                url: http://127.0.0.1
                 send_resolved: true
-          - name: 'HTTP-slack'
+          HTTP-slack:
             slack_configs:
-              - api_url: http://127.0.0.1/slack
+              slack:
+                api_url: http://127.0.0.1/slack
                 send_resolved: true
-          - name: 'smtp'
+          smtp:
             email_configs:
-              - to: test@example.com
+              email:
+                to: test@example.com
                 from: test@example.com
                 smarthost: example.com
                 auth_username: username
                 auth_password: password
+                send_resolved: true
+          #Two endpoints in one receiver
+          Multi-receiver:
+            slack_configs:
+              slack:
+                api_url: http://127.0.0.1/slack
+                send_resolved: true
+            webhook_configs:
+              webhook:
+                url: http://127.0.0.1
                 send_resolved: true
 
 Configure pushgateway

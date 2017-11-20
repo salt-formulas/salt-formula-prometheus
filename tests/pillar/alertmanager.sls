@@ -17,38 +17,56 @@ prometheus:
         group_interval: 5m
         repeat_interval: 3h
         receiver: HTTP-notification
-      inhibit_rules:
-        - source_match:
+      inhibit_rule:
+        InhibitCriticalWhenDown:
+          enabled: true
+          source_match:
             severity: 'down'
           target_match:
             severity: 'critical'
           equal: ['region', 'service']
-        - source_match:
+        InhibitWarningWhenDown:
+          enabled: true
+          source_match:
             severity: 'down'
           target_match:
             severity: 'warning'
           equal: ['region', 'service']
-        - source_match:
+        InhibitWarningWhenCritical:
+          enabled: true
+          source_match:
             severity: 'critical'
           target_match:
             severity: 'warning'
-          equal: ['alertname', 'region', 'service']
-      receivers:
-        - name: 'HTTP-notification'
+          equal: ['region', 'service']
+      receiver:
+        HTTP-notification:
           webhook_configs:
-            - url: http://127.0.0.1
+            webhook_example:
+              url: http://127.0.0.1
               send_resolved: true
-        - name: 'HTTP-slack'
+        HTTP-slack:
           slack_configs:
-            - api_url: http://127.0.0.1/slack
+            slack_example:
+              api_url: http://127.0.0.1/slack
               send_resolved: true
-        - name: 'smtp'
+        smtp:
           email_configs:
-            - to: test@example.com
+            email_example:
+              to: test@example.com
               from: test@example.com
               smarthost: example.com
               auth_username: username
               auth_password: password
+              send_resolved: true
+        Multi-receiver:
+          webhook_configs:
+            webhook:
+              url: http://127.0.0.1
+              send_resolved: true
+          slack_configs:
+            slack:
+              api_url: http://127.0.0.1/slack
               send_resolved: true
 docker:
   host:

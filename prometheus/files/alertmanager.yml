@@ -76,7 +76,8 @@ receivers:
       send_resolved: {{ webhook.send_resolved | lower }}
       {%- endif %}
     {%- endfor %}
-  {%- elif config.slack_configs is defined %}
+  {%- endif %}
+  {%- if config.slack_configs is defined %}
     slack_configs:
     {%- for name, slack in config.slack_configs.iteritems() %}
     # {{ name }}
@@ -88,7 +89,8 @@ receivers:
       channel: {{ slack.channel }}
       {%- endif %}
     {%- endfor %}
-  {%- elif config.email_configs is defined %}
+  {%- endif %}
+  {%- if config.email_configs is defined %}
     email_configs:
     {%- for name, email in config.email_configs.iteritems() %}
     # {{ name }}
