@@ -8,7 +8,6 @@ parameters:
     prometheus_region_label: "region1"
     prometheus_scrape_interval: "15s"
     prometheus_storage_retention: "360h"
-    prometheus_storage_heap_size: 3221225472
   prometheus:
     server:
       enabled: true
@@ -21,10 +20,7 @@ parameters:
         address: 0.0.0.0
       storage:
         local:
-          engine: "persisted"
           retention: ${_param:prometheus_storage_retention}
-          target_heap_size: ${_param:prometheus_storage_heap_size}
-          num_fingerprint_mutexes: 4096
       alertmanager:
         notification_queue_capacity: 10000
       config:

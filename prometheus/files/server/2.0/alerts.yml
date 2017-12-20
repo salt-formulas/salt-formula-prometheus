@@ -1,0 +1,65 @@
+{%- from "prometheus/map.jinja" import server with context %}
+
+{%- set alerts = {} %}
+{%- set recordings = {} %}
+
+{%- for node_name, node_grains in salt['mine.get']('*', 'grains.items').iteritems() %}
+  {%- set server_grain = node_grains.get('prometheus', {}).get('server', {}) %}
+  {%- for recordingname, recording in server_grain.get('recording', {}).iteritems() %}
+    {%- do recordings.update({recordingname: recording}) %}
+  {%- endfor %}
+{%- endfor %}
+
+groups:
+{%- set recordings = salt['grains.filter_by']({'default': recordings}, merge=server.get('recording', {})) %}
+- name: recording.rules
+  rules:
+{%- for recordingname, recording in recordings.iteritems() %}
+  {%- if recording.get('enabled', True) %}
+  - record: {{ recordingname }}
+    expr: >-
+      {{ recording.query | indent(6, False) }}
+  {%- endif %}
+{%- endfor %}
+
+{%- for node_name, node_grains in salt['mine.get']('*', 'grains.items').iteritems() %}
+  {%- set server_grain = node_grains.get('prometheus', {}).get('server', {}) %}
+  {%- for alertname, alert in server_grain.get('alert', {}).iteritems() %}
+      {%- do alerts.update({alertname: alert}) %}
+  {%- endfor %}
+{%- endfor %}
+
+{%- set alerts = salt['grains.filter_by']({'default': alerts}, merge=server.get('alert', {})) %}
+- name: alert.rules
+  rules:
+{%- for alertname, alert in alerts.iteritems() %}
+  {%- if alert.get('enabled', True) %}
+  - alert: {{ alertname }}
+    expr: >-
+      {{ alert.if | indent(6, False) }}
+    {%- if alert.for is defined %}
+    for: {{ alert.for }}{%- endif %}
+    {#- Handle labels #}
+    {%- if alert.labels is not defined %}
+      {%- do alert.update({'labels': {}}) %}
+    {%- endif %}
+    {%- for label_name, label_value in server.get('config', {}).get('alert', {}).get('labels_add', {}).iteritems() %}
+      {%- if label_name not in alert.labels %}
+        {%- do alert.labels.update({label_name: label_value}) %}
+      {%- endif %}
+    {%- endfor %}
+    {%- if alert.labels %}
+    labels:
+      {%- for name, value in alert.labels.iteritems() %}
+      {{ name }}: "{{ value }}"
+      {%- endfor %}
+    {%- endif %}
+    {#- Handle annotations #}
+    {%- if alert.annotations is defined %}
+    annotations:
+      {%- for name, value in alert.annotations.iteritems() %}
+      {{ name }}: "{{ value }}"
+      {%- endfor %}
+    {%- endif %}
+  {%- endif %}
+{%- endfor %}

@@ -15,6 +15,7 @@ Configure prometheus server
 
   prometheus:
     server:
+      version: 2.0
       enabled: true
       dir:
         config: /srv/volumes/prometheus
@@ -62,11 +63,7 @@ Configure prometheus server
             process_open_fds / process_max_fds
       storage:
         local:
-          engine: "persisted"
           retention: "360h"
-          memory_chunks: 1048576
-          max_chunks_to_persist: 524288
-          num_fingerprint_mutexes: 4096
       alertmanager:
         notification_queue_capacity: 10000
       config:

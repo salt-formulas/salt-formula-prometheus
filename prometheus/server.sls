@@ -14,14 +14,14 @@
 
 {{server.dir.config}}/prometheus.yml:
   file.managed:
-  - source: salt://prometheus/files/prometheus.yml
+  - source: salt://prometheus/files/server/prometheus.yml
   - template: jinja
   - require:
     - file: {{server.dir.config}}
 
 {{server.dir.config}}/alerts.yml:
   file.managed:
-  - source: salt://prometheus/files/alerts.yml
+  - source: salt://prometheus/files/server/{{server.version}}/alerts.yml
   - template: jinja
   - require:
     - file: {{server.dir.config}}

@@ -55,10 +55,7 @@ prometheus:
           summary: 'Prometheus target down'
     storage:
       local:
-        engine: "persisted"
         retention: "360h"
-        target_heap_size: 3221225472
-        num_fingerprint_mutexes: 4096
     alertmanager:
       notification_queue_capacity: 10000
     config:

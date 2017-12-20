@@ -1,8 +1,9 @@
+{% from "prometheus/map.jinja" import server with context %}
 dashboard:
   prometheus-performances_prometheus:
     datasource: prometheus
     format: json
-    template: prometheus/files/grafana_dashboards/prometheus_performances_prometheus.json
+    template: prometheus/files/grafana_dashboards/server/{{server.version}}/prometheus_performances_prometheus.json
   remote_storage_adapter_prometheus:
     datasource: prometheus
     format: json
@@ -10,7 +11,7 @@ dashboard:
   prometheus_stats_prometheus:
     datasource: prometheus
     format: json
-    template: prometheus/files/grafana_dashboards/prometheus_stats_prometheus.json
+    template: prometheus/files/grafana_dashboards/server/{{server.version}}/prometheus_stats_prometheus.json
   alertmanager_prometheus:
     datasource: prometheus
     format: json

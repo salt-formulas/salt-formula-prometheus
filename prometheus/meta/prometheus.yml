@@ -13,6 +13,9 @@ server:
       annotations:
         summary: 'Prometheus endpoint {{ $labels.instance }} down'
         description: 'The Prometheus target {{ $labels.instance }} is down for the job {{ $labels.job }}.'
+{% endraw %}
+{%- if server.version == 1.7 %}
+{% raw %}
     PrometheusRushMode:
       if: 'prometheus_local_storage_rushed_mode != 0'
       for: 10m
@@ -23,6 +26,7 @@ server:
         summary: 'Prometheus {{ $labels.instance }} in rush mode'
         description: 'The Prometheus {{ $labels.instance }} is in rush mode for 10m.'
 {% endraw %}
+{%- endif %}
 {%- endif %}
 {%- if alertmanager.get('enabled', False) %}
     AlertmanagerNotificationFailed:
