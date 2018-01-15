@@ -10,6 +10,6 @@ Vcs-Git: https://github.com/salt-formulas/salt-formula-prometheus.git
 
 Package: salt-formula-prometheus
 Architecture: all
-Depends: ${misc:Depends}, salt-master, reclass
+Depends: ${misc:Depends}
 Description: prometheus Salt formula
  Install and configure prometheus monitoring
