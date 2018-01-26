@@ -160,6 +160,17 @@ Configure pushgateway
       enabled: true
       external_port: 15012
 
+Install prometheus as service
+-------------------------------------
+
+.. code-block:: yaml
+
+parameters:
+  prometheus:
+    server:
+      is_container: false
+
+
 Documentation and Bugs
 ======================
 

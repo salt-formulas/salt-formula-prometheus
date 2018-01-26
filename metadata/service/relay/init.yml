@@ -1,0 +1,12 @@
+applications:
+  - prometheus
+classes:
+ - service.prometheus.support
+parameters:
+  _param:
+    prometheus_relay_bind_port: 8080
+  prometheus:
+    relay:
+      enabled: true
+      bind:
+        port: ${_param:prometheus_relay_bind_port}

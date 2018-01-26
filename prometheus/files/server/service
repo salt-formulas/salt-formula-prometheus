@@ -1,0 +1,18 @@
+[Unit]
+Description=Prometheus Server
+Documentation=https://prometheus.io/docs/introduction/overview/
+After=network-online.target
+
+[Service]
+EnvironmentFile=-/etc/default/prometheus
+User=root
+Group=root
+Restart=on-failure
+ExecStart=/usr/bin/prometheus \
+	--web.listen-address=${PROMETHEUS_BIND_ADDRESS} \
+	--config.file=${PROMETHEUS_CONFIG_DIR}/prometheus.yml \
+	--storage.tsdb.path=${PROMETHEUS_DATA_DIR} \
+	--storage.tsdb.retention=${PROMETHEUS_STORAGE_LOCAL_RETENTION}
+
+[Install]
+WantedBy=multi-user.target

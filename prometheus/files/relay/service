@@ -1,0 +1,18 @@
+{%- from "prometheus/map.jinja" import relay with context %}
+[Unit]
+After=network.target
+
+[Service]
+User=root
+EnvironmentFile=-/etc/default/prometheus-relay
+ExecStart=/usr/bin/prometheus-relay \
+    -port=${PROMETHEUS_RELAY_BIND_PORT} \
+{%- if relay.get("backends") %}
+    -urls=${PROMETHEUS_RELAY_BACKENDS}
+{%- endif %}
+ExecReload=/bin/kill -HUP $MAINPID
+Restart=on-failure
+KillMode=control-group
+
+[Install]
+WantedBy=multi-user.target

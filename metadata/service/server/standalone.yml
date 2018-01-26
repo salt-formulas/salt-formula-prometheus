@@ -7,21 +7,21 @@ parameters:
     prometheus_evaluation_interval: "15s"
     prometheus_region_label: "region1"
     prometheus_scrape_interval: "15s"
-    prometheus_storage_retention: "360h"
+    prometheus_storage_retention: "4320h"
+    prometheus_server_bind_port: 9090
   prometheus:
     server:
       enabled: true
-      is_container: true
+      is_container: false
       use_grains:
-        target: true
-        recording: true
-        alert: true
+        target: false
+        recording: false
+        alert: false
       dir:
-        config: /srv/volumes/prometheus/server
-        config_in_container: /srv/prometheus
-        data: /srv/volumes/local/prometheus/server
+        config: /etc/prometheus
+        data: /var/lib/prometheus/data
       bind:
-        port: 9090
+        port: ${_param:prometheus_server_bind_port}
         address: 0.0.0.0
       storage:
         local:

@@ -1,12 +1,19 @@
 {% set server = salt['grains.filter_by']({
   'default': {
     'version': 2.0,
+    'pkgs': ['prometheus-bin'],
     'target': {
       'static': {
       },
     },
   },
 }, merge=salt['pillar.get']('prometheus:server')) %}
+
+{% set relay = salt['grains.filter_by']({
+  'default': {
+    'pkgs': ['prometheus-relay']
+  },
+}, merge=salt['pillar.get']('prometheus:relay')) %}
 
 {% set alertmanager = salt['grains.filter_by']({
   'default': {
