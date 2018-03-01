@@ -3,6 +3,9 @@
 {%- if route.receiver is defined -%}
 receiver: {{ route.receiver }}
 {%- endif -%}
+{%- if route.continue is defined %}
+continue: {{ route.continue }}
+{%- endif -%}
 {%- if route.group_by is defined %}
 group_by:
   {%- for group_by in route.group_by %}
