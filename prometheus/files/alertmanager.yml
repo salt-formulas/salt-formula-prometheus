@@ -118,6 +118,15 @@ receivers:
       {%- if email.send_resolved is defined %}
       send_resolved: {{ email.send_resolved | lower }}
       {%- endif %}
+      {%- if email.html is defined %}
+      html: '{{ email.html }}'
+      {%- endif %}
+      {%- if email.headers is defined %}
+      headers:
+        {%- for header, value in email.headers.iteritems() %}
+        {{ header }}: {{ value }}
+        {%- endfor %}
+      {%- endif %}
     {%- endfor %}
   {%- endif %}
 {%- endif %}
