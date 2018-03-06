@@ -94,16 +94,25 @@ scrape_configs:
     {%- if job.get('metric_relabel') %}
     metric_relabel_configs:
       {%- for label in job.get('metric_relabel', []) %}
-        {%- if label.source_labels is string %}
-          {%- set label_list = label.source_labels.split(',') %}
-        {%- elif label.source_labels is list %}
-          {%- set label_list = label.source_labels %}
+      - action: {{ label.get('action', 'replace') }}
+        {%- if label.get('source_labels') %}
+          {%- if label.source_labels is string %}
+            {%- set label_list = label.source_labels.split(',') %}
+          {%- elif label.source_labels is list %}
+            {%- set label_list = label.source_labels %}
+          {%- endif %}
+          {%- if label_list is defined %}
+        source_labels: {{ label_list }}
+          {%- endif %}
         {%- endif %}
-        {%- if label_list is defined %}
-      - source_labels: {{ label_list }}
+        {%- if label.get('regex') %}
         regex: "{{ label.regex }}"
+        {%- endif %}
+        {%- if label.get('target_label') %}
         target_label: "{{ label.target_label }}"
-        replacement: {{ label.replacement }}
+        {%- endif %}
+        {%- if label.get('replacement') %}
+        replacement: "{{ label.replacement }}"
         {%- endif %}
       {%- endfor %}
     {%- endif %}
