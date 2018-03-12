@@ -1,14 +1,14 @@
-{%- from "prometheus/map.jinja" import server with context %}
-
 {%- set alerts = {} %}
 {%- set recordings = {} %}
 
-{%- for node_name, node_grains in salt['mine.get']('*', 'grains.items').iteritems() %}
-  {%- set server_grain = node_grains.get('prometheus', {}).get('server', {}) %}
-  {%- for recordingname, recording in server_grain.get('recording', {}).iteritems() %}
-    {%- do recordings.update({recordingname: recording}) %}
+{%- if server.get('use_grains', {}).get('recording', True) %}
+  {%- for node_name, node_grains in salt['mine.get']('*', 'grains.items').iteritems() %}
+    {%- set server_grain = node_grains.get('prometheus', {}).get('server', {}) %}
+    {%- for recordingname, recording in server_grain.get('recording', {}).iteritems() %}
+      {%- do recordings.update({recordingname: recording}) %}
+    {%- endfor %}
   {%- endfor %}
-{%- endfor %}
+{%- endif %}
 
 {%- set recordings = salt['grains.filter_by']({'default': recordings}, merge=server.get('recording', {})) %}
 
@@ -18,12 +18,14 @@
   {%- endif %}
 {%- endfor %}
 
-{%- for node_name, node_grains in salt['mine.get']('*', 'grains.items').iteritems() %}
-  {%- set server_grain = node_grains.get('prometheus', {}).get('server', {}) %}
-  {%- for alertname, alert in server_grain.get('alert', {}).iteritems() %}
+{%- if server.get('use_grains', {}).get('alert', True) %}
+  {%- for node_name, node_grains in salt['mine.get']('*', 'grains.items').iteritems() %}
+    {%- set server_grain = node_grains.get('prometheus', {}).get('server', {}) %}
+    {%- for alertname, alert in server_grain.get('alert', {}).iteritems() %}
       {%- do alerts.update({alertname: alert}) %}
+    {%- endfor %}
   {%- endfor %}
-{%- endfor %}
+{%- endif %}
 
 {%- set alerts = salt['grains.filter_by']({'default': alerts}, merge=server.get('alert', {})) %}
 

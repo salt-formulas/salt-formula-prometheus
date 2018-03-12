@@ -1,0 +1,5 @@
+{% from "prometheus/map.jinja" import server with context %}
+PROMETHEUS_CONFIG_DIR={{ server.dir.config }}
+PROMETHEUS_DATA_DIR={{ server.dir.data }}
+PROMETHEUS_BIND_ADDRESS={{ server.bind.address }}:{{ server.bind.port }}
+PROMETHEUS_STORAGE_LOCAL_RETENTION={{ server.storage.local.retention }}

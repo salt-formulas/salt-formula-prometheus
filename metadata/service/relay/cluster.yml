@@ -1,0 +1,10 @@
+parameters:
+  prometheus:
+    relay:
+      backends:
+      - host: ${_param:cluster_node01_address}
+        port: ${_param:prometheus_server_bind_port}
+      - host: ${_param:cluster_node02_address}
+        port: ${_param:prometheus_server_bind_port}
+      - host: ${_param:cluster_node03_address}
+        port: ${_param:prometheus_server_bind_port}

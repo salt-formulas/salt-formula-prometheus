@@ -1,0 +1,10 @@
+{%- from "prometheus/map.jinja" import relay with context %}
+{%- if relay.get("backends") %}
+  {%- set relay_backends = [] %}
+  {%- for backend in relay.backends %}
+    {%- set address = "%s:%d" | format(backend.host, backend.port) %}
+    {%- do relay_backends.append(address) %}
+  {%- endfor %}
+PROMETHEUS_RELAY_BACKENDS={{ relay_backends | join(',') }}
+{%- endif %}
+PROMETHEUS_RELAY_BIND_PORT={{ relay.bind.port }}

@@ -1,5 +1,3 @@
-{%- from "prometheus/map.jinja" import server with context %}
-
 global:
 {%- if server.get('config', {}).global is defined %}
 {{ server.config.global | yaml(False) | indent(2, true) }}
@@ -38,39 +36,44 @@ rule_files:
 - alerts.yml
 
 {%- set static_target = server.target.static %}
-{%- for node_name, node_grains in salt['mine.get']('*', 'grains.items').iteritems() %}
-  {%- set static_grain = node_grains.get('prometheus', {}).get('server', {}).get('target', {}).get('static', {}) %}
-  {%- for job_name, job in static_grain.iteritems() %}
-    {%- if static_target[job_name] is not defined %}
-      {%- do static_target.update({job_name: {
-        'enabled': job.get('enabled', True),
-        'metrics_path': job.get('metrics_path', '/metrics'),
-        'scheme': job.get('scheme', 'http')}
-      }) %}
-      {%- if job.get('tls_config') %}
-        {%- do static_target[job_name].update({
-          'tls_config': {
-            'skip_verify': job.get('tls_config', {}).get('skip_verify', False),
-            'cert_name': job.get('tls_config', {}).get('cert_name'),
-            'key_name': job.get('tls_config', {}).get('key_name')
-          }
+{%- if server.get('use_grains', {}).get('target', True) %}
+  {%- for node_name, node_grains in salt['mine.get']('*', 'grains.items').iteritems() %}
+    {%- set static_grain = node_grains.get('prometheus', {}).get('server', {}).get('target', {}).get('static', {}) %}
+    {%- for job_name, job in static_grain.iteritems() %}
+      {%- if static_target[job_name] is not defined %}
+        {%- do static_target.update({job_name: {
+          'enabled': job.get('enabled', True),
+          'metrics_path': job.get('metrics_path', '/metrics'),
+          'honor_labels': job.get('honor_labels', False),
+          'scrape_interval': job.get('scrape_interval', server.get('config', {}).get('global', {}).get('scrape_interval', '15s')),
+          'scrape_timeout': job.get('scrape_interval', server.get('config', {}).get('global', {}).get('scrape_interval', '15s')),
+          'scheme': job.get('scheme', 'http')}
         }) %}
+        {%- if job.get('tls_config') %}
+          {%- do static_target[job_name].update({
+            'tls_config': {
+              'skip_verify': job.get('tls_config', {}).get('skip_verify', False),
+              'cert_name': job.get('tls_config', {}).get('cert_name'),
+              'key_name': job.get('tls_config', {}).get('key_name')
+            }
+          }) %}
+        {%- endif %}
       {%- endif %}
-    {%- endif %}
-    {%- if static_target[job_name]['endpoint'] is not defined %}
-      {%- do static_target[job_name].update({'endpoint': []}) %}
-    {%- endif %}
-    {%- if static_target[job_name]['metric_relabel'] is not defined %}
-      {%- do static_target[job_name].update({'metric_relabel': []}) %}
-    {%- endif %}
-    {%- for target in job.get('endpoint', []) %}
-      {%- do static_target[job_name]['endpoint'].append(target) %}
-    {%- endfor %}
-    {%- for label in job.get('metric_relabel', []) %}
-      {%- do static_target[job_name]['metric_relabel'].append(label) %}
+      {%- if static_target[job_name]['endpoint'] is not defined %}
+        {%- do static_target[job_name].update({'endpoint': []}) %}
+      {%- endif %}
+      {%- if static_target[job_name]['metric_relabel'] is not defined %}
+        {%- do static_target[job_name].update({'metric_relabel': []}) %}
+      {%- endif %}
+      {%- for target in job.get('endpoint', []) %}
+        {%- do static_target[job_name]['endpoint'].append(target) %}
+      {%- endfor %}
+      {%- for label in job.get('metric_relabel', []) %}
+        {%- do static_target[job_name]['metric_relabel'].append(label) %}
+      {%- endfor %}
     {%- endfor %}
   {%- endfor %}
-{%- endfor %}
+{%- endif %}
 
 scrape_configs:
 {%- for job_name, job in static_target.iteritems() %}
@@ -83,6 +86,15 @@ scrape_configs:
   - job_name: {{ job_name }}
     {% if job.get('scheme') %}scheme: {{ job.scheme }}{%- endif %}
     {% if job.get('metrics_path') %}metrics_path: {{ job.metrics_path }}{%- endif %}
+    {% if job.honor_labels is defined %}honor_labels: {{ job.honor_labels }}{%- endif %}
+    {% if job.scrape_interval is defined %}scrape_interval: {{ job.scrape_interval }}{%- endif %}
+    {% if job.scrape_timeout is defined %}scrape_timeout: {{ job.scrape_timeout }}{%- endif %}
+    {%- if job.get('params') %}
+    params:
+      {%- for param_name, param_value in job.get('params', {}).iteritems() %}
+      {{ param_name }}: {{ param_value }}
+      {%- endfor %}
+    {%- endif %}
     {%- if job.get('tls_config') %}
     tls_config:
       {% if job.tls_config.get('skip_verify') is defined %}insecure_skip_verify: {{ job.tls_config.skip_verify | lower }}{%- endif %}
@@ -120,12 +132,14 @@ scrape_configs:
 {%- endfor %}
 
 {%- set kubernetes_target = {} %}
-{%- for node_name, node_grains in salt['mine.get']('*', 'grains.items').iteritems() %}
-  {%- set kubernetes_grain = node_grains.get('prometheus', {}).get('server', {}).get('target', {}).get('kubernetes', {}) %}
-  {%- if kubernetes_grain %}
-    {%- do kubernetes_target.update(kubernetes_grain) %}
-  {%- endif %}
-{%- endfor %}
+{%- if server.get('use_grains', {}).get('target', True) %}
+  {%- for node_name, node_grains in salt['mine.get']('*', 'grains.items').iteritems() %}
+    {%- set kubernetes_grain = node_grains.get('prometheus', {}).get('server', {}).get('target', {}).get('kubernetes', {}) %}
+    {%- if kubernetes_grain %}
+      {%- do kubernetes_target.update(kubernetes_grain) %}
+    {%- endif %}
+  {%- endfor %}
+{%- endif %}
 
 {%- if kubernetes_target.get('enabled', False) %}
 
