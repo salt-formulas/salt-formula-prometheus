@@ -69,7 +69,7 @@
           "tableColumn": "",
           "targets": [
             {
-              "expr": "min(up{job=\"remote_storage_adapter\"})",
+              "expr": "max(up{job=\"remote_storage_adapter\"})",
               "format": "time_series",
               "intervalFactor": 2,
               "legendFormat": "",

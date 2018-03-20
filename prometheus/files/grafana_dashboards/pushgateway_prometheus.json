@@ -72,7 +72,7 @@
           "tableColumn": "",
           "targets": [
             {
-              "expr": "min(up{job=\"pushgateway\"})",
+              "expr": "max(up{job=\"pushgateway\"})",
               "format": "time_series",
               "intervalFactor": 2,
               "legendFormat": "",

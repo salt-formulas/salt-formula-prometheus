@@ -72,7 +72,7 @@
           "tableColumn": "",
           "targets": [
             {
-              "expr": "min(up{job=\"alertmanager\"})",
+              "expr": "max(up{job=\"alertmanager\"})",
               "format": "time_series",
               "intervalFactor": 2,
               "legendFormat": "",
