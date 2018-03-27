@@ -65,11 +65,17 @@ rule_files:
       {%- if static_target[job_name]['metric_relabel'] is not defined %}
         {%- do static_target[job_name].update({'metric_relabel': []}) %}
       {%- endif %}
+      {%- if static_target[job_name]['relabel_configs'] is not defined %}
+        {%- do static_target[job_name].update({'relabel_configs': []}) %}
+      {%- endif %}
       {%- for target in job.get('endpoint', []) %}
         {%- do static_target[job_name]['endpoint'].append(target) %}
       {%- endfor %}
       {%- for label in job.get('metric_relabel', []) %}
         {%- do static_target[job_name]['metric_relabel'].append(label) %}
+      {%- endfor %}
+      {%- for label in job.get('relabel_configs', []) %}
+        {%- do static_target[job_name]['relabel_configs'].append(label) %}
       {%- endfor %}
     {%- endfor %}
   {%- endfor %}
@@ -125,6 +131,26 @@ scrape_configs:
         {%- endif %}
         {%- if label.get('replacement') %}
         replacement: "{{ label.replacement }}"
+        {%- endif %}
+      {%- endfor %}
+    {%- endif %}
+    {%- if job.get('relabel_configs') %}
+    relabel_configs:
+      {%- for label in job.get('relabel_configs', []) %}
+        {%- if label.source_labels is string %}
+          {%- set label_list = label.source_labels.split(',') %}
+        {%- elif label.source_labels is list %}
+          {%- set label_list = label.source_labels %}
+        {%- endif %}
+        {%- if label_list is defined %}
+      - source_labels: {{ label_list }}
+        regex: "{{ label.regex }}"
+          {%- if label.get('target_label') %}
+        target_label: "{{ label.target_label }}"
+          {%- endif %}
+          {%- if label.get('replacement') %}
+        replacement: "{{ label.replacement }}"
+          {%- endif %}
         {%- endif %}
       {%- endfor %}
     {%- endif %}

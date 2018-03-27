@@ -34,6 +34,11 @@
             replacement: {{ host }}
             source_labels: "instance"
             target_label: "host"
+        relabel_configs:
+          - regex: {{ address }}:{{ svc_parameters.bind.port }}
+            replacement: {{ host }}
+            source_labels: "__address__"
+            target_label: "host"
                 {%- endif %}
               {%- endif %}
             {%- endfor %}
