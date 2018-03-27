@@ -136,7 +136,7 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "rate(http_requests_total{handler=\"push\",job=\"pushgateway\",instance=~\"$Pushgateway:[1-9][0-9]*\"}[10m])",
+              "expr": "rate(http_requests_total{job=\"pushgateway\",instance=~\"$Pushgateway:[1-9][0-9]*\"}[10m])",
               "format": "time_series",
               "hide": false,
               "intervalFactor": 2,
@@ -145,7 +145,7 @@
               "step": 4
             },
             {
-              "expr": "rate(http_requests_total{handler=\"push\",job=\"pushgateway\",instance=~\"$Pushgateway:[1-9][0-9]*\"}[1h])",
+              "expr": "rate(http_requests_total{job=\"pushgateway\",instance=~\"$Pushgateway:[1-9][0-9]*\"}[1h])",
               "format": "time_series",
               "intervalFactor": 2,
               "legendFormat": "1h rate",
@@ -153,7 +153,7 @@
               "step": 4
             },
             {
-              "expr": "rate(http_requests_total{handler=\"push\",job=\"pushgateway\",instance=~\"$Pushgateway:[1-9][0-9]*\"}[6h])",
+              "expr": "rate(http_requests_total{job=\"pushgateway\",instance=~\"$Pushgateway:[1-9][0-9]*\"}[6h])",
               "format": "time_series",
               "intervalFactor": 2,
               "legendFormat": "6h rate",
