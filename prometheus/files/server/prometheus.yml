@@ -315,15 +315,31 @@ scrape_configs:
   {%- endif %}
 {%- endif %}
 
-{%- if server.get('target', {}).get('dns', {}).get('enabled', False) %}
-  {%- for target in server.get('target', {}).get('dns', {}).get('endpoint', []) %}
-  - job_name: {{ target.name }}
-    dns_sd_configs:
-    - names:
-  {%- for domain in target.domain %}
-      - {{ domain }}
-  {%- endfor %}
-      type: {{ target.type }}
-      port: {{ target.port }}
+{%- set dns_endpoints = {} %}
+{%- if server.get('use_grains', {}).get('target', True) %}
+  {%- for node_name, node_grains in salt['mine.get']('*', 'grains.items').iteritems() %}
+    {%- set dns_grain = node_grains.get('prometheus', {}).get('server', {}).get('target', {}).get('dns', {}) %}
+    {%- if dns_grain.get('enabled', False) %}
+      {%- for endpoint in dns_grain.get('endpoint', []) %}
+        {%- do dns_endpoints.update({endpoint.name: endpoint}) %}
+      {%- endfor %}
+    {%- endif %}
   {%- endfor %}
 {%- endif %}
+
+{%- if server.get('target', {}).get('dns', {}).get('enabled', False) %}
+  {%- for endpoint in server.get('target', {}).get('dns', {}).get('endpoint', []) %}
+    {%- do dns_endpoints.update({endpoint.name: endpoint}) %}
+  {%- endfor %}
+{%- endif %}
+
+{%- for name, endpoint in dns_endpoints | dictsort %}
+  - job_name: {{ endpoint.name }}
+    dns_sd_configs:
+    - names:
+  {%- for domain in endpoint.domain %}
+      - {{ domain }}
+  {%- endfor %}
+      type: {{ endpoint.type }}
+      port: {{ endpoint.port }}
+{%- endfor %}
