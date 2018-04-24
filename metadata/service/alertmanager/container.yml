@@ -21,21 +21,21 @@ parameters:
           receiver: default
         inhibit_rule:
           InhibitCriticalWhenDown:
-            enabled: true
+            enabled: false
             source_match:
               severity: 'down'
             target_match:
               severity: 'critical'
             equal: ['region', 'service']
           InhibitWarningWhenDown:
-            enabled: true
+            enabled: false
             source_match:
               severity: 'down'
             target_match:
               severity: 'warning'
             equal: ['region', 'service']
           InhibitWarningWhenCritical:
-            enabled: true
+            enabled: false
             source_match:
               severity: 'critical'
             target_match:
