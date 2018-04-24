@@ -5,6 +5,31 @@ global:
 
 {%- if server.get('config', {}).get('alertmanager') %}
 alerting:
+  {%- if server.get('config', {}).get('alert_relabel_configs') %}
+  alert_relabel_configs:
+    {%- for label in server.config.get('alert_relabel_configs', []) %}
+    - action: {{ label.get('action', 'replace') }}
+      {%- if label.get('source_labels') %}
+        {%- if label.source_labels is string %}
+          {%- set label_list = label.source_labels.split(',') %}
+        {%- elif label.source_labels is list %}
+          {%- set label_list = label.source_labels %}
+        {%- endif %}
+        {%- if label_list is defined %}
+      source_labels: {{ label_list }}
+        {%- endif %}
+      {%- endif %}
+      {%- if label.get('regex') %}
+      regex: "{{ label.regex }}"
+      {%- endif %}
+      {%- if label.get('target_label') %}
+      target_label: "{{ label.target_label }}"
+      {%- endif %}
+      {%- if label.get('replacement') %}
+      replacement: "{{ label.replacement }}"
+      {%- endif %}
+    {%- endfor %}
+  {%- endif %}
   alertmanagers:
     {%- for name, alertmanager in server.config.alertmanager.iteritems() %}
     {%- if alertmanager.get('enabled', True) %}
