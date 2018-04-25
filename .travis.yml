@@ -20,12 +20,16 @@ install:
   - bundle install
 
 env:
-  - PLATFORM=epcim/salt-formulas:saltstack-ubuntu-xenial-salt-2016.3 SUITE=alertmanager
-  - PLATFORM=epcim/salt-formulas:saltstack-ubuntu-xenial-salt-2016.3 SUITE=server
-  - PLATFORM=epcim/salt-formulas:saltstack-ubuntu-xenial-salt-2017.7 SUITE=alertmanager
-  - PLATFORM=epcim/salt-formulas:saltstack-ubuntu-xenial-salt-2017.7 SUITE=server
-  # - PLATFORM=epcim/salt-formulas:saltstack-ubuntu-bionic-salt-2017.7 SUITE=alertmanager
-  # - PLATFORM=epcim/salt-formulas:saltstack-ubuntu-bionic-salt-2017.7 SUITE=server
+  - PLATFORM=epcim/salt:saltstack-ubuntu-xenial-salt-2016.3 SUITE=alertmanager
+  - PLATFORM=epcim/salt:saltstack-ubuntu-xenial-salt-2016.3 SUITE=server
+  - PLATFORM=epcim/salt:saltstack-ubuntu-xenial-salt-2017.7 SUITE=alertmanager
+  - PLATFORM=epcim/salt:saltstack-ubuntu-xenial-salt-2017.7 SUITE=server
+  - PLATFORM=epcim/salt:saltstack-ubuntu-xenial-salt-stable SUITE=alertmanager
+  - PLATFORM=epcim/salt:saltstack-ubuntu-xenial-salt-stable SUITE=server
+  # - PLATFORM=epcim/salt:saltstack-ubuntu-bionic-salt-2017.7 SUITE=alertmanager
+  # - PLATFORM=epcim/salt:saltstack-ubuntu-bionic-salt-2017.7 SUITE=server
+  # - PLATFORM=epcim/salt:saltstack-ubuntu-bionic-salt-stable SUITE=alertmanager
+  # - PLATFORM=epcim/salt:saltstack-ubuntu-bionic-salt-stable SUITE=server
 
 before_script:
   - set -o pipefail

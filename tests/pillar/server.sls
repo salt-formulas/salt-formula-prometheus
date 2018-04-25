@@ -36,12 +36,12 @@ prometheus:
           cert_name: prometheus-server.crt
           key_name: prometheus-server.key
           member:
-            - host: ${_param:cluster_node01_address}
-              port: ${_param:cluster_node01_port}
-            - host: ${_param:cluster_node02_address}
-              port: ${_param:cluster_node02_port}
-            - host: ${_param:cluster_node03_address}
-              port: ${_param:cluster_node03_port}
+            - host: 10.0.175.101
+              port: 4001
+            - host: 10.0.175.102
+              port: 4001
+            - host: 10.0.175.103
+              port: 4001
     recording:
       instance:fd_utilization:
         query: >-
@@ -68,7 +68,7 @@ prometheus:
       remote_write:
         remote_storage_adapter:
           enabled: true
-          url: http://127.0.0.1:9201/write
+          url: "http://127.0.0.1:9201/write"
       alertmanager:
         docker_swarm_alertmanager:
           enabled: true
