@@ -45,3 +45,9 @@
   'default': {
   },
 }, merge=salt['pillar.get']('prometheus:remote_storage_adapter')) %}
+
+{% set alerta = salt['grains.filter_by']({
+  'default': {
+    'config_dir': '/srv/volumes/local/alerta',
+  },
+}, merge=salt['pillar.get']('prometheus:alerta')) %}}
