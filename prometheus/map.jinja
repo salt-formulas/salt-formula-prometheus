@@ -29,11 +29,8 @@
 {%- set monitoring = salt['grains.filter_by']({
   'default': {
     'remote_storage_adapter': {
-      'sent_vs_received_ratio': 10.0,
-      'ignored_vs_sent_ratio': 5.0,
-    },
-    'alertmanager': {
-      'notification_failed_rate': 0.3
+      'sent_vs_received_ratio': 0.9,
+      'ignored_vs_sent_ratio': 0.05,
     },
     'prometheus': {
       'remote_storage_queue_full_percent': 75.0,
@@ -51,3 +48,4 @@
     'config_dir': '/srv/volumes/local/alerta',
   },
 }, merge=salt['pillar.get']('prometheus:alerta')) %}}
+

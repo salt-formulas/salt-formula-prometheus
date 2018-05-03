@@ -5,45 +5,55 @@ server:
 {%- if server.get('enabled', False) %}
 {% raw %}
     PrometheusTargetDown:
-      if: 'up != 1'
+      if: up != 1
       for: 2m
       labels:
         severity: critical
         service: prometheus
       annotations:
-        summary: 'Prometheus endpoint {{ $labels.instance }} down'
-        description: 'The Prometheus target {{ $labels.instance }} is down for the job {{ $labels.job }}.'
+        summary: "Prometheus target is down"
+        description: "The Prometheus target for the {{ $labels.job }} job on the {{ $labels.host or $labels.instance }} node is down for at least 2 minutes."
+    PrometheusTargetSamplesOrderWarning:
+      if: increase(prometheus_target_scrapes_sample_out_of_order_total[1m]) > 0
+      labels:
+        severity: warning
+        service: prometheus
+      annotations:
+        summary: "Prometheus samples are out of order"
+        description: "{{ $value }} last-minute samples of Prometheus on the {{ $labels.instance }} instance are out of order."
+    PrometheusTargetSamplesBoundsWarning:
+      if: increase(prometheus_target_scrapes_sample_out_of_bounds_total[1m]) > 0
+      labels:
+        severity: warning
+        service: prometheus
+      annotations:
+        summary: "Prometheus samples timestamps are out of bounds"
+        description: "{{ $value }} last-minute samples of Prometheus on the {{ $labels.instance }} instance have timestamps out of bounds."
+    PrometheusTargetSamplesDuplicateWarning:
+      if: increase(prometheus_target_scrapes_sample_duplicate_timestamp_total[1m]) > 0
+      labels:
+        severity: warning
+        service: prometheus
+      annotations:
+        summary: "Prometheus samples have duplicate timestamps"
+        description: "{{ $value }} last-minute samples of Prometheus on the {{ $labels.instance }} instance have duplicate timestamps."
 {% endraw %}
 {%- if server.version == 1.7 %}
 {% raw %}
-    PrometheusRushMode:
-      if: 'prometheus_local_storage_rushed_mode != 0'
+    PrometheusDataIngestionWarning:
+      if: prometheus_local_storage_rushed_mode != 0
       for: 10m
       labels:
         severity: warning
         service: prometheus
       annotations:
-        summary: 'Prometheus {{ $labels.instance }} in rush mode'
-        description: 'The Prometheus {{ $labels.instance }} is in rush mode for 10m.'
+        summary: "Prometheus is in the rushed mode"
+        description: "The Prometheus service writes on the {{ $labels.instance }} instance do not keep up with data ingestion speed for at least 10 minutes."
 {% endraw %}
 {%- endif %}
 {%- endif %}
-{%- if alertmanager.get('enabled', False) %}
-    AlertmanagerNotificationFailed:
-      {%- set threshold = monitoring.alertmanager.notification_failed_rate|float %}
-      if: >-
-        rate(alertmanager_notifications_failed_total[5m]) > {{ threshold }}
-      for: 2m
-{%- raw %}
-      labels:
-        severity: warning
-        service: alertmanager
-      annotations:
-        summary: 'Alertmanager {{ $labels.instance }} failed notifications'
-        description: 'Alertmanager {{ $labels.instance }} failed notifications for {{ $labels.integration }} (current value={{ $value }}, threshold={%- endraw %}{{ threshold }})'
-{%- endif %}
 {%- if server.get('config', {}).get('remote_write') %}
-    PrometheusRemoteStorageQueue:
+    PrometheusRemoteStorageQueueFullWarning:
       {%- set threshold = monitoring.prometheus.remote_storage_queue_full_percent|float %}
       if: >-
         prometheus_remote_storage_queue_length / prometheus_remote_storage_queue_capacity * 100 > {{ threshold }}
@@ -53,31 +63,59 @@ server:
         severity: warning
         service: prometheus
       annotations:
-        summary: 'Prometheus {{ $labels.instance }} remote storage queue is filling'
-        description: 'The Prometheus {{ $labels.instance }} remote storage queue almost full (current value={{ $value }}%, threshold={%- endraw %}{{ threshold }}%)'
+        summary: "Prometheus remote storage queue is full in {%- endraw %} {{ threshold }}{%- raw %}%"
+        description: "The Prometheus remote storage queue on the {{ $labels.instance }} instance is {{ $value }}% full for at least 2 minutes."
+{%- endraw %}
 {%- endif %}
 {%- if remote_storage_adapter.get('enabled', False) %}
-    RemoteStorageAdapterSendingTooSlow:
+    RemoteStorageAdapterMetricsSendingWarning:
       {%- set threshold = monitoring.remote_storage_adapter.sent_vs_received_ratio|float %}
       if: >-
-        100.0 - (100.0 * sent_samples_total{job="remote_storage_adapter"} / on (job, instance) received_samples_total) > {{ threshold }}
+        increase(sent_samples_total{job="remote_storage_adapter"}[1m]) / on (job, instance) increase(received_samples_total[1m]) < {{ threshold }}
 {% raw %}
       labels:
         severity: warning
         service: remote_storage_adapter
       annotations:
-        summary: 'Remote storage adapter too slow on {{ $labels.instance }}'
-        description: 'Remote storage adapter can not ingest samples fast enough on {{ $labels.instance }} (current value={{ $value }}%, threshold={%- endraw %}{{ threshold }}%).'
-    RemoteStorageAdapterIgnoredTooHigh:
+        summary: "Ratio of sent to received remote storage adapter metrics is {%- endraw %} {{ threshold }}{%- raw %}"
+        description: "The ratio of the sent to received metrics of the remote storage adapter on the {{ $labels.instance }} instance is {{ $value }}."
+{% endraw %}
+    RemoteStorageAdapterMetricsIgnoredWarning:
       {%- set threshold = monitoring.remote_storage_adapter.ignored_vs_sent_ratio|float %}
       if: >-
-        100.0 * prometheus_influxdb_ignored_samples_total{job="remote_storage_adapter"} / on (job, instance) sent_samples_total > {{ threshold }}
+        increase(prometheus_influxdb_ignored_samples_total{job="remote_storage_adapter"}[1m]) / on (job, instance) increase(sent_samples_total[1m]) >= {{ threshold }}
 {% raw %}
       labels:
         severity: warning
         service: remote_storage_adapter
       annotations:
-        summary: 'Remote storage adapter receiving too many invalid metrics on {{ $labels.instance }}'
-        description: 'Remote storage adapter is receiving too many invalid metrics on {{ $labels.instance }} (current value={{ $value }}%, threshold={%- endraw %}{{ threshold }}%).'
+        summary: "{%- endraw %}{{ threshold }}{%- raw %}% of remote storage adapter metrics are invalid"
+        description: "{{ $value }}% of remote storage adapter metrics on the {{ $labels.instance }} instance are invalid."
+{%- endraw %}
+{%- endif %}
+{%- if alertmanager.get('enabled', False) %}
+{%- raw %}
+    AlertmanagerNotificationFailureWarning:
+      if: >-
+        increase(alertmanager_notifications_failed_total[2m]) > 0
+      for: 2m
+      labels:
+        severity: warning
+        service: alertmanager
+      annotations:
+        summary: "Alertmanager notifications fail"
+        description: "An average of {{ $value }} Alertmanager {{ $labels.integration }} notifications on the {{ $labels.instance }} instance fail for at least 2 minutes."
+    AlertmanagerAlertsInvalidWarning:
+      if: >-
+        increase(alertmanager_alerts_invalid_total[2m]) > 0
+      for: 2m
+      labels:
+        severity: warning
+        service: alertmanager
+      annotations:
+        summary: "Alertmanager alerts are invalid"
+        description: "An average of {{ $value }} Alertmanager {{ $labels.integration }} alerts on the {{ $labels.instance }} instance are invalid for at least 2 minutes."
+{%- endraw %}
 {%- endif %}
 {%- endif %}
+
