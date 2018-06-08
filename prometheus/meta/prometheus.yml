@@ -12,7 +12,7 @@ server:
         service: prometheus
       annotations:
         summary: "Prometheus target is down"
-        description: "The Prometheus target for the {{ $labels.job }} job on the {{ $labels.host or $labels.instance }} node is down for at least 2 minutes."
+        description: "The Prometheus target for the {{ $labels.job }} job on the {{ $labels.host or $labels.instance }} node is down for 2 minutes."
     PrometheusTargetSamplesOrderWarning:
       if: increase(prometheus_target_scrapes_sample_out_of_order_total[1m]) > 0
       labels:
@@ -20,7 +20,7 @@ server:
         service: prometheus
       annotations:
         summary: "Prometheus samples are out of order"
-        description: "{{ $value }} last-minute samples of Prometheus on the {{ $labels.instance }} instance are out of order."
+        description: "{{ $value }} Prometheus samples on the {{ $labels.instance }} instance are out of order (as measured over the last minute)."
     PrometheusTargetSamplesBoundsWarning:
       if: increase(prometheus_target_scrapes_sample_out_of_bounds_total[1m]) > 0
       labels:
@@ -28,7 +28,7 @@ server:
         service: prometheus
       annotations:
         summary: "Prometheus samples timestamps are out of bounds"
-        description: "{{ $value }} last-minute samples of Prometheus on the {{ $labels.instance }} instance have timestamps out of bounds."
+        description: "{{ $value }} Prometheus samples on the {{ $labels.instance }} instance have timestamps out of bounds (as measured over the last minute)."
     PrometheusTargetSamplesDuplicateWarning:
       if: increase(prometheus_target_scrapes_sample_duplicate_timestamp_total[1m]) > 0
       labels:
@@ -36,7 +36,7 @@ server:
         service: prometheus
       annotations:
         summary: "Prometheus samples have duplicate timestamps"
-        description: "{{ $value }} last-minute samples of Prometheus on the {{ $labels.instance }} instance have duplicate timestamps."
+        description: "{{ $value }} Prometheus samples on the {{ $labels.instance }} instance have duplicate timestamps (as measured over the last minute)."
 {% endraw %}
 {%- if server.version == 1.7 %}
 {% raw %}
@@ -48,7 +48,7 @@ server:
         service: prometheus
       annotations:
         summary: "Prometheus is in the rushed mode"
-        description: "The Prometheus service writes on the {{ $labels.instance }} instance do not keep up with data ingestion speed for at least 10 minutes."
+        description: "The Prometheus service writes on the {{ $labels.instance }} instance do not keep up with data ingestion speed for 10 minutes."
 {% endraw %}
 {%- endif %}
 {%- endif %}
@@ -63,8 +63,8 @@ server:
         severity: warning
         service: prometheus
       annotations:
-        summary: "Prometheus remote storage queue is full in {%- endraw %} {{ threshold }}{%- raw %}%"
-        description: "The Prometheus remote storage queue on the {{ $labels.instance }} instance is {{ $value }}% full for at least 2 minutes."
+        summary: "Prometheus remote storage queue is {%- endraw %} {{ threshold }}{%- raw %}% full"
+        description: "The Prometheus remote storage queue on the {{ $labels.instance }} instance is {{ $value }}% full for 2 minutes."
 {%- endraw %}
 {%- endif %}
 {%- if remote_storage_adapter.get('enabled', False) %}
@@ -77,8 +77,8 @@ server:
         severity: warning
         service: remote_storage_adapter
       annotations:
-        summary: "Ratio of sent to received remote storage adapter metrics is {%- endraw %} {{ threshold }}{%- raw %}"
-        description: "The ratio of the sent to received metrics of the remote storage adapter on the {{ $labels.instance }} instance is {{ $value }}."
+        summary: "Remote storage adapter metrics sent/received ratio reached limit of {%- endraw %} {{ threshold }}{%- raw %}"
+        description: "The remote storage adapter metrics on sent to received ratio the {{ $labels.instance }} instance is {{ $value }}."
 {% endraw %}
     RemoteStorageAdapterMetricsIgnoredWarning:
       {%- set threshold = monitoring.remote_storage_adapter.ignored_vs_sent_ratio|float %}
@@ -104,7 +104,7 @@ server:
         service: alertmanager
       annotations:
         summary: "Alertmanager notifications fail"
-        description: "An average of {{ $value }} Alertmanager {{ $labels.integration }} notifications on the {{ $labels.instance }} instance fail for at least 2 minutes."
+        description: "An average of {{ $value }} Alertmanager {{ $labels.integration }} notifications on the {{ $labels.instance }} instance fail for 2 minutes."
     AlertmanagerAlertsInvalidWarning:
       if: >-
         increase(alertmanager_alerts_invalid_total[2m]) > 0
@@ -114,8 +114,7 @@ server:
         service: alertmanager
       annotations:
         summary: "Alertmanager alerts are invalid"
-        description: "An average of {{ $value }} Alertmanager {{ $labels.integration }} alerts on the {{ $labels.instance }} instance are invalid for at least 2 minutes."
+        description: "An average of {{ $value }} Alertmanager {{ $labels.integration }} alerts on the {{ $labels.instance }} instance are invalid for 2 minutes."
 {%- endraw %}
 {%- endif %}
 {%- endif %}
-
