@@ -78,7 +78,7 @@ server:
         service: remote_storage_adapter
       annotations:
         summary: "Remote storage adapter metrics sent/received ratio reached limit of {%- endraw %} {{ threshold }}{%- raw %}"
-        description: "The remote storage adapter metrics on sent to received ratio the {{ $labels.instance }} instance is {{ $value }}."
+        description: "The remote storage adapter metrics on sent to received ratio on the {{ $labels.instance }} instance is {{ $value }}."
 {% endraw %}
     RemoteStorageAdapterMetricsIgnoredWarning:
       {%- set threshold = monitoring.remote_storage_adapter.ignored_vs_sent_ratio|float %}
