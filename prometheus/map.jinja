@@ -49,3 +49,10 @@
   },
 }, merge=salt['pillar.get']('prometheus:alerta')) %}}
 
+{% set gainsight = salt['grains.filter_by']({
+  'default': {
+    'queries': {
+    }
+  }
+}, merge=salt['pillar.get']('prometheus:gainsight')) %}}
+

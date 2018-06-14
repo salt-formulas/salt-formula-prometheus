@@ -1,0 +1,8 @@
+applications:
+  - prometheus
+parameters:
+  prometheus:
+    gainsight:
+      enabled: true
+      dir:
+        config: /srv/volumes/local/gainsight
