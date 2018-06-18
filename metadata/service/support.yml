@@ -5,3 +5,5 @@ parameters:
         enabled: true
       grafana:
         enabled: true
+      telegraf:
+        enabled: true

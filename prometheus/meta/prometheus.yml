@@ -1,5 +1,5 @@
 {%- if pillar.prometheus is defined %}
-{%- from "prometheus/map.jinja" import server, alertmanager, remote_storage_adapter, monitoring with context %}
+{%- from "prometheus/map.jinja" import server, alertmanager, remote_storage_adapter, monitoring, relay with context %}
 server:
   alert:
 {%- if server.get('enabled', False) %}
@@ -116,5 +116,106 @@ server:
         summary: "Alertmanager alerts are invalid"
         description: "An average of {{ $value }} Alertmanager {{ $labels.integration }} alerts on the {{ $labels.instance }} instance are invalid for 2 minutes."
 {%- endraw %}
+{%- endif %}
+{%- if relay.get('enabled', False) %}
+{%- raw %}
+    PrometheusRelayServiceDown:
+      if: >-
+        procstat_running{process_name="prometheus-relay"} == 0
+      for: 2m
+      labels:
+        severity: minor
+        service: prometheus
+      annotations:
+        summary: "Prometheus relay service is down"
+        description: "The Prometheus relay service on the {{$labels.host}} node is down for 2 minutes."
+    PrometheusRelayServiceDownMajor:
+      if: >-
+        count(procstat_running{process_name="prometheus-relay"} == 0) >= count(procstat_running{process_name="prometheus-relay"}) * 0.5
+      for: 2m
+      labels:
+        severity: major
+        service: prometheus
+      annotations:
+        summary: "50% of Prometheus relay services are down"
+        description: "{{ $value }} of Prometheus relay services (>= 50%) are down for 2 minutes."
+    PrometheusRelayServiceOutage:
+      if: >-
+        count(procstat_running{process_name="prometheus-relay"} == 0) == count(procstat_running{process_name="prometheus-relay"})
+      for: 2m
+      labels:
+        severity: critical
+        service: prometheus
+      annotations:
+        summary: "Prometheus relay service outage"
+        description: "All Prometheus relay services are down for 2 minutes."
+{%- endraw %}
+{%- endif %}
+{%- if server.get("enabled", False) and not server.get("is_container", True) %}
+{%- raw %}
+    PrometheusLTSServiceDown:
+      if: >-
+        procstat_running{process_name="prometheus"} == 0
+      for: 2m
+      labels:
+        severity: minor
+        service: prometheus
+      annotations:
+        summary: "Prometheus Long Term Storage service is down"
+        description: "The Prometheus Long Term Storage service on the {{$labels.host}} node is down for 2 minutes."
+    PrometheusRelayServiceDownMajor:
+      if: >-
+        count(procstat_running{process_name="prometheus"} == 0) >= count(procstat_running{process_name="prometheus"}) * 0.5
+      for: 2m
+      labels:
+        severity: major
+        service: prometheus
+      annotations:
+        summary: "50% of Prometheus Long Term Storage services are down"
+        description: "{{ $value }} of Prometheus Long Term Storage services (>= 50%) are down for 2 minutes."
+    PrometheusRelayServiceOutage:
+      if: >-
+        count(procstat_running{process_name="prometheus"} == 0) == count(procstat_running{process_name="prometheus"})
+      for: 2m
+      labels:
+        severity: critical
+        service: prometheus
+      annotations:
+        summary: "Prometheus Long Term Storage service outage"
+        description: "All Prometheus Long Term Storage services are down for 2 minutes."
+{%- endraw %}
+{%- endif %}
+{%- if server.get("enabled", False) and not server.get("is_container", True) and relay.get('enabled', False) %}
+  {%- set addresses = [] %}
+  {%- if server.get('bind', {}).address is defined and not server.bind.address.startswith('127') and server.bind.address != '0.0.0.0' %}
+    {%- do addresses.append(server.bind.address) %}
+  {%- endif %}
+  {%- for address in grains['fqdn_ip4'] %}
+    {%- if not address.startswith('127') %}
+      {%- do addresses.append(address) %}
+    {%- endif %}
+  {%- endfor %}
+  target:
+    static:
+      prometheus_lts:
+        enabled: True
+        endpoint:
+          - address: {{ addresses[0] }}
+            port: {{ server.bind.port }}
+        relabel_configs:
+          - regex: {{ addresses[0] }}:{{ server.bind.port }}
+            replacement: {{ grains['host'] }}
+            source_labels: "__address__"
+            target_label: "host"
+      prometheus_relay:
+        enabled: True
+        endpoint:
+          - address: {{ addresses[0] }}
+            port: {{ relay.bind.port }}
+        relabel_configs:
+          - regex: {{ addresses[0] }}:{{ relay.bind.port }}
+            replacement: {{ grains['host'] }}
+            source_labels: "__address__"
+            target_label: "host"
 {%- endif %}
 {%- endif %}
