@@ -1,4 +1,4 @@
-{% from "prometheus/map.jinja" import server with context %}
+{% from "prometheus/map.jinja" import server, relay with context %}
 dashboard:
   prometheus-performances_prometheus:
     datasource: prometheus
@@ -20,3 +20,9 @@ dashboard:
     datasource: prometheus
     format: json
     template: prometheus/files/grafana_dashboards/pushgateway_prometheus.json
+{%- if relay.get('enabled', False) %}
+  relay_prometheus:
+    datasource: prometheus
+    format: json
+    template: prometheus/files/grafana_dashboards/relay_prometheus.json
+{%- endif %}
