@@ -12,7 +12,7 @@ server:
         service: prometheus
       annotations:
         summary: "Prometheus target is down"
-        description: "The Prometheus target for the {{ $labels.job }} job on the {{ $labels.host or $labels.instance }} node is down for 2 minutes."
+        description: "The Prometheus target for the {{ $labels.job }} job on the {{ or $labels.host $labels.instance }} node is down for 2 minutes."
     PrometheusTargetSamplesOrderWarning:
       if: increase(prometheus_target_scrapes_sample_out_of_order_total[1m]) > 0
       labels:
