@@ -1,0 +1,2 @@
+{% from "prometheus/map.jinja" import gainsight with context %}
+{{ gainsight.crontab.duration }} root /opt/gainsight/entrypoint.py >> /var/log/cron.log 2>&1

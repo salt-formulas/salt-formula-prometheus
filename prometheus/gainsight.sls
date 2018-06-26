@@ -7,12 +7,23 @@
   file.directory:
     - makedirs: True
 
+{{gainsight.dir.crontab}}:
+  file.directory:
+    - makedirs: True
+
 {{gainsight.dir.config}}/config.ini:
   file.managed:
-  - source: salt://prometheus/files/gainsight.yml
+  - source: salt://prometheus/files/gainsight/gainsight_config.yml
   - template: jinja
   - require:
     - file: {{gainsight.dir.config}}
+
+{{gainsight.dir.crontab}}/crontab:
+  file.managed:
+  - source: salt://prometheus/files/gainsight/gainsight_crontab.yml
+  - template: jinja
+  - require:
+    - file: {{gainsight.dir.crontab}}
 
 {%- endif %}
 {%- endif %}

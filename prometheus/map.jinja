@@ -52,7 +52,10 @@
 {% set gainsight = salt['grains.filter_by']({
   'default': {
     'queries': {
-    }
+    },
+    'crontab': {
+      'duration': '0 0 * * *'
+    },
   }
 }, merge=salt['pillar.get']('prometheus:gainsight')) %}}
 

@@ -5,4 +5,5 @@ parameters:
     gainsight:
       enabled: true
       dir:
-        config: /srv/volumes/local/gainsight
+        config: /srv/volumes/local/gainsight/config
+        crontab: /srv/volumes/local/gainsight/cron.d
