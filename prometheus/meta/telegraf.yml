@@ -1,8 +1,7 @@
-{%- if pillar.prometheus is defined %}
 {%- from "prometheus/map.jinja" import server, relay with context %}
+{%- if pillar.prometheus is defined and relay.get('enabled', False) and server.get("enabled", False) and not server.get("is_container", True) %}
 agent:
   input:
-  {%- if relay.get('enabled', False) and server.get("enabled", False) and not server.get("is_container", True) %}
     procstat:
       process:
     {%- if relay.get('enabled', False) %}
@@ -13,5 +12,4 @@ agent:
         prometheus:
           pattern: '/usr/bin/prometheus[^-]'
     {%- endif %}
-  {% endif %}
 {%- endif %}
