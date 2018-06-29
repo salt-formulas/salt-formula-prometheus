@@ -26,6 +26,15 @@
 }, merge=salt['pillar.get']('prometheus:exporters')) %}
 {%- do salt['defaults.merge'](exporters, grains.get('prometheus', {}).get('exporters', {}))  %}
 
+{% set pushgateway = salt['grains.filter_by']({
+  'default': {
+    'enabled': True,
+    'dir': {
+      'data': '/srv/volumes/local/pushgateway',
+    }
+  },
+}, merge=salt['pillar.get']('prometheus:pushgateway')) %}
+
 {%- set monitoring = salt['grains.filter_by']({
   'default': {
     'remote_storage_adapter': {
