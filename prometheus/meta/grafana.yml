@@ -1,13 +1,15 @@
-{% from "prometheus/map.jinja" import server, relay with context %}
+{% from "prometheus/map.jinja" import server, remote_storage_adapter, pushgateway, relay with context %}
 dashboard:
   prometheus-performances_prometheus:
     datasource: prometheus
     format: json
     template: prometheus/files/grafana_dashboards/server/{{server.version}}/prometheus_performances_prometheus.json
+{%- if remote_storage_adapter.get('enabled', False) %}
   remote_storage_adapter_prometheus:
     datasource: prometheus
     format: json
     template: prometheus/files/grafana_dashboards/remote_storage_adapter_prometheus.json
+{%- endif %}
   prometheus_stats_prometheus:
     datasource: prometheus
     format: json
@@ -16,10 +18,12 @@ dashboard:
     datasource: prometheus
     format: json
     template: prometheus/files/grafana_dashboards/alertmanager_prometheus.json
+{%- if pushgateway.get('enabled', False) %}
   pushgateway_prometheus:
     datasource: prometheus
     format: json
     template: prometheus/files/grafana_dashboards/pushgateway_prometheus.json
+{%- endif %}
 {%- if relay.get('enabled', False) %}
   relay_prometheus:
     datasource: prometheus
