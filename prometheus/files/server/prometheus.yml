@@ -161,6 +161,11 @@ scrape_configs:
     {%- endif %}
     {%- if job.get('relabel_configs') %}
     relabel_configs:
+      {%- if server.config.environment_label is defined %}
+      - source_labels: ['instance']
+        target_label: environment
+        replacement: {{ server.config.environment_label }}
+      {%- endif %}
       {%- for label in job.get('relabel_configs', []) %}
         {%- if label.source_labels is string %}
           {%- set label_list = label.source_labels.split(',') %}
@@ -208,6 +213,11 @@ scrape_configs:
         {% if kubernetes_target.get('cert_name') %}cert_file: {{ server.dir.config_in_container }}/{{ kubernetes_target.cert_name }}{%- endif %}
         {% if kubernetes_target.get('key_name') %}key_file: {{ server.dir.config_in_container }}/{{ kubernetes_target.key_name }}{%- endif %}
     relabel_configs:
+    {%- if server.config.environment_label is defined %}
+    - source_labels: ['instance']
+      target_label: environment
+      replacement: {{ server.config.environment_label }}
+    {%- endif %}
     - source_labels: [__meta_kubernetes_namespace, __meta_kubernetes_service_name, __meta_kubernetes_endpoint_port_name]
       action: keep
       regex: default;kubernetes;https
@@ -226,6 +236,11 @@ scrape_configs:
         {% if kubernetes_target.get('cert_name') %}cert_file: {{ server.dir.config_in_container }}/{{ kubernetes_target.cert_name }}{%- endif %}
         {% if kubernetes_target.get('key_name') %}key_file: {{ server.dir.config_in_container }}/{{ kubernetes_target.key_name }}{%- endif %}
     relabel_configs:
+    {%- if server.config.environment_label is defined %}
+    - source_labels: ['instance']
+      target_label: environment
+      replacement: {{ server.config.environment_label }}
+    {%- endif %}
     - action: labelmap
       regex: __meta_kubernetes_node_label_(.+)
 
@@ -243,6 +258,11 @@ scrape_configs:
         {% if kubernetes_target.get('cert_name') %}cert_file: {{ server.dir.config_in_container }}/{{ kubernetes_target.cert_name }}{%- endif %}
         {% if kubernetes_target.get('key_name') %}key_file: {{ server.dir.config_in_container }}/{{ kubernetes_target.key_name }}{%- endif %}
     relabel_configs:
+    {%- if server.config.environment_label is defined %}
+    - source_labels: ['instance']
+      target_label: environment
+      replacement: {{ server.config.environment_label }}
+    {%- endif %}
     - action: labelmap
       regex: __meta_kubernetes_node_label_(.+)
     - source_labels: [__address__]
@@ -270,6 +290,11 @@ scrape_configs:
         {% if kubernetes_target.get('cert_name') %}cert_file: {{ server.dir.config_in_container }}/{{ kubernetes_target.cert_name }}{%- endif %}
         {% if kubernetes_target.get('key_name') %}key_file: {{ server.dir.config_in_container }}/{{ kubernetes_target.key_name }}{%- endif %}
     relabel_configs:
+    {%- if server.config.environment_label is defined %}
+    - source_labels: ['instance']
+      target_label: environment
+      replacement: {{ server.config.environment_label }}
+    {%- endif %}
     - source_labels: [__meta_kubernetes_service_annotation_prometheus_io_scrape]
       action: keep
       regex: true
@@ -317,6 +342,11 @@ scrape_configs:
         {% if kubernetes_target.get('cert_name') %}cert_file: {{ server.dir.config_in_container }}/{{ kubernetes_target.cert_name }}{%- endif %}
         {% if kubernetes_target.get('key_name') %}key_file: {{ server.dir.config_in_container }}/{{ kubernetes_target.key_name }}{%- endif %}
     relabel_configs:
+    {%- if server.config.environment_label is defined %}
+    - source_labels: ['instance']
+      target_label: environment
+      replacement: {{ server.config.environment_label }}
+    {%- endif %}
     - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
       action: keep
       regex: true
@@ -367,4 +397,10 @@ scrape_configs:
   {%- endfor %}
       type: {{ endpoint.type }}
       port: {{ endpoint.port }}
+    relabel_configs:
+    {%- if server.config.environment_label is defined %}
+    - source_labels: ['instance']
+      target_label: environment
+      replacement: {{ server.config.environment_label }}
+    {%- endif %}
 {%- endfor %}
