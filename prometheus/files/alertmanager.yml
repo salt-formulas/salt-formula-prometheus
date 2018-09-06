@@ -29,10 +29,50 @@ match_re:
 {%- endif %}
 {%- endmacro -%}
 
+{%- macro http_config_entry(http_config={}) -%}
+http_config:
+  {%- if http_config.basic_auth is defined %}
+  basic_auth:
+    username: {{ http_config.basic_auth.username }}
+    password: {{ http_config.basic_auth.password }}
+  {%- endif %}
+
+  {%- if http_config.bearer_token is defined %}
+  bearer_token: {{ http_config.bearer_token }}
+  {%- endif %}
+  {%- if http_config.bearer_token_file is defined %}
+  bearer_token_file: {{ http_config.bearer_token_file }}
+  {%- endif %}
+
+  {%- if http_config.tls_config is defined %}
+  tls_config:
+    {%- if http_config.tls_config.ca_file is defined%}
+    ca_file: {{ http_config.tls_config.ca_file }}
+    {%- endif %}
+    {%- if http_config.tls_config.cert_file is defined %}
+    cert_file: {{ http_config.tls_config.cert_file }}
+    {%- endif %}
+    {%- if http_config.tls_config.key_file is defined %}
+    key_file: {{ http_config.tls_config.key_file }}
+    {%- endif %}
+    {%- if http_config.tls_config.server_name is defined %}
+    server_name: {{ http_config.tls_config.server_name }}
+    {%- endif %}
+    insecure_skip_verify: {{ http_config.tls_config.get("insecure_skip_verify", False) | lower }}
+  {%- endif %}
+
+  {%- if http_config.proxy_url is defined %}
+  proxy_url: {{ http_config.proxy_url }}
+  {%- endif %}
+{%- endmacro -%}
+
 global:
 {%- if alertmanager.config.global is defined %}
   {%- if alertmanager.config.global.resolve_timeout is defined %}
   resolve_timeout: {{ alertmanager.config.global.resolve_timeout }}
+  {%- endif %}
+  {%- if alertmanager.config.global.http_config is defined %}
+  {{ http_config_entry(alertmanager.config.global.http_config) | indent(2) }}
   {%- endif %}
 {%- endif %}
 
@@ -75,8 +115,9 @@ receivers:
     {%- for name, webhook in config.webhook_configs.iteritems() %}
     # {{ name }}
     - url: {{ webhook.url }}
-      {%- if webhook.send_resolved is defined %}
-      send_resolved: {{ webhook.send_resolved | lower }}
+      send_resolved: {{ webhook.get("send_resolved", True) | lower }}
+      {%- if webhook.http_config is defined %}
+      {{ http_config_entry(webhook.http_config) | indent(6) }}
       {%- endif %}
     {%- endfor %}
   {%- endif %}
