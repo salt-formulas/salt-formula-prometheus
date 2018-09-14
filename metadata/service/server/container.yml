@@ -4,9 +4,11 @@ classes:
  - service.prometheus.support
 parameters:
   _param:
+    prometheus_am_queue_capacity: 10000
     prometheus_evaluation_interval: "15s"
     prometheus_region_label: "region1"
     prometheus_scrape_interval: "15s"
+    prometheus_scrape_timeout: "15s"
     prometheus_storage_retention: "360h"
   prometheus:
     server:
@@ -27,11 +29,11 @@ parameters:
         local:
           retention: ${_param:prometheus_storage_retention}
       alertmanager:
-        notification_queue_capacity: 10000
+        notification_queue_capacity: ${_param:prometheus_am_queue_capacity}
       config:
         global:
           scrape_interval: ${_param:prometheus_scrape_interval}
-          scrape_timeout: "15s"
+          scrape_timeout: ${_param:prometheus_scrape_timeout}
           evaluation_interval: ${_param:prometheus_evaluation_interval}
           external_labels:
             region: ${_param:prometheus_region_label}
