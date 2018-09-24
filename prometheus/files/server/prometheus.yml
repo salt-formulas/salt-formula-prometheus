@@ -42,6 +42,15 @@ alerting:
       - names: {{ alertmanager.dns_sd_configs.get('domain', [])|yaml }}
         type: {{ alertmanager.dns_sd_configs.type }}
         port: {{ alertmanager.dns_sd_configs.port }}
+    {%- elif alertmanager.kubernetes_sd_configs is defined %}
+    - kubernetes_sd_configs:
+      - role: {{ alertmanager.kubernetes_sd_configs.role }}
+        namespaces:
+          names: ['{{ alertmanager.kubernetes_sd_configs.namespace }}']
+      relabel_configs:
+      - source_labels: [__meta_kubernetes_pod_name]
+        action: keep
+        regex: {{ alertmanager.kubernetes_sd_configs.pod_name_regex }}
     {%- endif %}
     {%- endif %}
     {%- endfor %}
