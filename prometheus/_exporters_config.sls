@@ -11,9 +11,9 @@
       {%- endfor %}
       {%- set host_ip_address = fqdn_ip4_addresses[0] %}
       {%- load_yaml as svc_configs %}
-        {%- for exporter, parameters in exporters.iteritems() %}
+        {%- for exporter, parameters in exporters.items() %}
           {%- if parameters.get('enabled', False) %}
-            {%- for svc, svc_parameters in parameters.get('services', {}).iteritems() %}
+            {%- for svc, svc_parameters in parameters.get('services', {}).items() %}
               {%- if svc_parameters.get('enabled', False) %}
                 {%- if svc_parameters.bind is defined %}
                   {%- if svc_parameters.bind.get('address', '0.0.0.0') == '0.0.0.0' %}

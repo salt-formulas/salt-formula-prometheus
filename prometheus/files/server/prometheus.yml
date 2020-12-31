@@ -31,7 +31,7 @@ alerting:
     {%- endfor %}
   {%- endif %}
   alertmanagers:
-    {%- for name, alertmanager in server.config.alertmanager.iteritems() %}
+    {%- for name, alertmanager in server.config.alertmanager.items() %}
     {%- if alertmanager.get('enabled', True) %}
     # {{ name }}
     {%- if alertmanager.static_configs is defined %}
@@ -58,7 +58,7 @@ alerting:
 
 {%- if server.get('config', {}).get('remote_write') %}
 remote_write:
-  {%- for name, remote_endpoint in server.config.remote_write.iteritems() %}
+  {%- for name, remote_endpoint in server.config.remote_write.items() %}
   {%- if remote_endpoint.get('enabled', True) %}
   # {{ name }}
   - url: {{ remote_endpoint.url }}
@@ -71,9 +71,9 @@ rule_files:
 
 {%- set static_target = server.target.static %}
 {%- if server.get('use_grains', {}).get('target', True) %}
-  {%- for node_name, node_grains in salt['mine.get']('*', 'grains.items').iteritems() %}
+  {%- for node_name, node_grains in salt['mine.get']('*', 'grains.items').items() %}
     {%- set static_grain = node_grains.get('prometheus', {}).get('server', {}).get('target', {}).get('static', {}) %}
-    {%- for job_name, job in static_grain.iteritems() %}
+    {%- for job_name, job in static_grain.items() %}
       {%- if static_target[job_name] is not defined %}
         {%- do static_target.update({job_name: {
           'enabled': job.get('enabled', True),
@@ -116,7 +116,7 @@ rule_files:
 {%- endif %}
 
 scrape_configs:
-{%- for job_name, job in static_target.iteritems() %}
+{%- for job_name, job in static_target.items() %}
   {%- set nodes = [] %}
   {%- for target in job.get('endpoint', []) %}
     {%- set address = "'%s:%d'" | format(target.address, target.port) %}
@@ -131,7 +131,7 @@ scrape_configs:
     {% if job.scrape_timeout is defined %}scrape_timeout: {{ job.scrape_timeout }}{%- endif %}
     {%- if job.get('params') %}
     params:
-      {%- for param_name, param_value in job.get('params', {}).iteritems() %}
+      {%- for param_name, param_value in job.get('params', {}).items() %}
       {{ param_name }}: {{ param_value }}
       {%- endfor %}
     {%- endif %}
@@ -198,7 +198,7 @@ scrape_configs:
 
 {%- set kubernetes_target = {} %}
 {%- if server.get('use_grains', {}).get('target', True) %}
-  {%- for node_name, node_grains in salt['mine.get']('*', 'grains.items').iteritems() %}
+  {%- for node_name, node_grains in salt['mine.get']('*', 'grains.items').items() %}
     {%- set kubernetes_grain = node_grains.get('prometheus', {}).get('server', {}).get('target', {}).get('kubernetes', {}) %}
     {%- if kubernetes_grain %}
       {%- do kubernetes_target.update(kubernetes_grain) %}
@@ -350,7 +350,7 @@ scrape_configs:
 
 {%- set dns_endpoints = {} %}
 {%- if server.get('use_grains', {}).get('target', True) %}
-  {%- for node_name, node_grains in salt['mine.get']('*', 'grains.items').iteritems() %}
+  {%- for node_name, node_grains in salt['mine.get']('*', 'grains.items').items() %}
     {%- set dns_grain = node_grains.get('prometheus', {}).get('server', {}).get('target', {}).get('dns', {}) %}
     {%- if dns_grain.get('enabled', False) %}
       {%- for endpoint in dns_grain.get('endpoint', []) %}

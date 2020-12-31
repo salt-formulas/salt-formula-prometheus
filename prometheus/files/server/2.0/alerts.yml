@@ -2,9 +2,9 @@
 {%- set recordings = {} %}
 
 {%- if server.get('use_grains', {}).get('recording', True) %}
-  {%- for node_name, node_grains in salt['mine.get']('*', 'grains.items').iteritems() %}
+  {%- for node_name, node_grains in salt['mine.get']('*', 'grains.items').items() %}
     {%- set server_grain = node_grains.get('prometheus', {}).get('server', {}) %}
-    {%- for recordingname, recording in server_grain.get('recording', {}).iteritems() %}
+    {%- for recordingname, recording in server_grain.get('recording', {}).items() %}
       {%- do recordings.update({recordingname: recording}) %}
     {%- endfor %}
   {%- endfor %}
@@ -14,7 +14,7 @@ groups:
 {%- set recordings = salt['grains.filter_by']({'default': recordings}, merge=server.get('recording', {})) %}
 - name: recording.rules
   rules:
-{%- for recordingname, recording in recordings.iteritems() %}
+{%- for recordingname, recording in recordings.items() %}
   {%- if recording.get('enabled', True) %}
   - record: {{ recordingname }}
     expr: >-
@@ -25,9 +25,9 @@ groups:
 {%- endfor %}
 
 {%- if server.get('use_grains', {}).get('alert', True) %}
-  {%- for node_name, node_grains in salt['mine.get']('*', 'grains.items').iteritems() %}
+  {%- for node_name, node_grains in salt['mine.get']('*', 'grains.items').items() %}
     {%- set server_grain = node_grains.get('prometheus', {}).get('server', {}) %}
-    {%- for alertname, alert in server_grain.get('alert', {}).iteritems() %}
+    {%- for alertname, alert in server_grain.get('alert', {}).items() %}
       {%- do alerts.update({alertname: alert}) %}
     {%- endfor %}
   {%- endfor %}
@@ -36,7 +36,7 @@ groups:
 {%- set alerts = salt['grains.filter_by']({'default': alerts}, merge=server.get('alert', {})) %}
 - name: alert.rules
   rules:
-{%- for alertname, alert in alerts.iteritems() %}
+{%- for alertname, alert in alerts.items() %}
   {%- if alert.get('enabled', True) %}
   - alert: {{ alertname }}
     expr: >-
@@ -47,21 +47,21 @@ groups:
     {%- if alert.labels is not defined %}
       {%- do alert.update({'labels': {}}) %}
     {%- endif %}
-    {%- for label_name, label_value in server.get('config', {}).get('alert', {}).get('labels_add', {}).iteritems() %}
+    {%- for label_name, label_value in server.get('config', {}).get('alert', {}).get('labels_add', {}).items() %}
       {%- if label_name not in alert.labels %}
         {%- do alert.labels.update({label_name: label_value}) %}
       {%- endif %}
     {%- endfor %}
     {%- if alert.labels %}
     labels:
-      {%- for name, value in alert.labels.iteritems() %}
+      {%- for name, value in alert.labels.items() %}
       {{ name }}: "{{ value }}"
       {%- endfor %}
     {%- endif %}
     {#- Handle annotations #}
     {%- if alert.annotations is defined %}
     annotations:
-      {%- for name, value in alert.annotations.iteritems() %}
+      {%- for name, value in alert.annotations.items() %}
       {{ name }}: "{{ value }}"
       {%- endfor %}
     {%- endif %}
