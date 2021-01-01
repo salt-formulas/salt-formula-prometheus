@@ -81,22 +81,22 @@ route:
   {{ route_entry(config_route) | indent(2) }}
   {%- if config_route.get('routes', {}) %}
   routes:
-  {%- for route_name, route in config_route.get('routes', {}).iteritems() %}
+  {%- for route_name, route in config_route.get('routes', {}).items() %}
   # {{ route_name }}
   - {{ route_entry(route) | indent(4) }}
   {%- endfor %}
 {%- endif %}
 
 inhibit_rules:
-{%- for name, rule in alertmanager.config.get('inhibit_rule', {}).iteritems() %}
+{%- for name, rule in alertmanager.config.get('inhibit_rule', {}).items() %}
 {%- if rule.get('enabled', True) %}
   # {{ name }}
   - source_match:
-  {%- for key, value in rule.source_match.iteritems() %}
+  {%- for key, value in rule.source_match.items() %}
       {{ key }}: {{ value }}
   {%- endfor %}
     target_match:
-  {%- for key, value in rule.target_match.iteritems() %}
+  {%- for key, value in rule.target_match.items() %}
       {{ key }}: {{ value }}
   {%- endfor %}
     equal:
@@ -107,12 +107,12 @@ inhibit_rules:
 {%- endfor %}
 
 receivers:
-{%- for name, config in alertmanager.config.get('receiver', {}).iteritems() %}
+{%- for name, config in alertmanager.config.get('receiver', {}).items() %}
 {%- if config.get('enabled', True) %}
   - name: '{{ name }}'
   {%- if config.webhook_configs is defined %}
     webhook_configs:
-    {%- for name, webhook in config.webhook_configs.iteritems() %}
+    {%- for name, webhook in config.webhook_configs.items() %}
     # {{ name }}
     - url: {{ webhook.url }}
       send_resolved: {{ webhook.get("send_resolved", True) | lower }}
@@ -123,7 +123,7 @@ receivers:
   {%- endif %}
   {%- if config.slack_configs is defined %}
     slack_configs:
-    {%- for name, slack in config.slack_configs.iteritems() %}
+    {%- for name, slack in config.slack_configs.items() %}
     # {{ name }}
     - api_url: {{ slack.api_url }}
       {%- if slack.send_resolved is defined %}
@@ -136,7 +136,7 @@ receivers:
   {%- endif %}
   {%- if config.email_configs is defined %}
     email_configs:
-    {%- for name, email in config.email_configs.iteritems() %}
+    {%- for name, email in config.email_configs.items() %}
     # {{ name }}
     - to: {{ email.to }}
       from: {{ email.from }}
@@ -164,7 +164,7 @@ receivers:
       {%- endif %}
       {%- if email.headers is defined %}
       headers:
-        {%- for header, value in email.headers.iteritems() %}
+        {%- for header, value in email.headers.items() %}
         {{ header }}: {{ value }}
         {%- endfor %}
       {%- endif %}

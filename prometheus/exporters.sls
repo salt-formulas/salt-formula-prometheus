@@ -1,5 +1,5 @@
 {% from "prometheus/map.jinja" import exporters with context %}
-{%- for exporter, parameters in exporters.iteritems() %}
+{%- for exporter, parameters in exporters.items() %}
   {%- if parameters.get('enabled', False) %}
     {%- if parameters.get('packages', False) %}
 {{ exporter }}_exporter_packages:
@@ -19,7 +19,7 @@
       - file: {{ exporter }}_exporter_service_config_file
     {%- endif %}
 
-    {%- for svc, svc_parameters in parameters.get('services', {}).iteritems()  %}
+    {%- for svc, svc_parameters in parameters.get('services', {}).items()  %}
       {%- if  svc_parameters.get('enabled', False) %}
         {%- if svc_parameters.template is defined %}
           {%- set jmxbind = svc_parameters.get('jmx_bind', {}) %}

@@ -1,5 +1,5 @@
 {% from "prometheus/map.jinja" import gainsight with context %}
 [Queries]
-{%- for query,value in gainsight.queries.iteritems() %}
+{%- for query,value in gainsight.queries.items() %}
 {{ query }}={{ value }}
 {%- endfor %}
